@@ -4,13 +4,14 @@ This is a versatile calculator program written in C that supports various mathem
 
 ## Features
 
-- [Arithmetic-operations] (#Arithmetic opertions)
-- [Mathematical-Functions] (#Functions)
-- [Matrix] (#Matrix oprations)
-- [Complex-numbers] (#Basic operations on complex numbers)
+- [Arithmetic opreatins](#Arithmetic-operation)
+- [Mathematical unctions](#Mathematical-Functions)
+- [Matrix operations](#Matrix-oprations)
+- [Basic operations on complex numbers](#Complex-numbers)
 
 
-## Arithmetic-operations
+
+### Arithmetic-operations
 
 This calculator can perform the simple mathematical operations on numbers such as: 
 
@@ -23,7 +24,8 @@ This calculator can perform the simple mathematical operations on numbers such a
 
 wich are entered in infix notations then converted to postfix notation before being computed (RPN).
 
-## Mathematical-Functions
+### Mathematical-Functions
+
 Computes trigonometric functions, and other functions listed below.
 
 * `sin(...)` Sine.
@@ -47,18 +49,18 @@ Computes trigonometric functions, and other functions listed below.
 * `avg(...)` Mean.
 * `median(...)` Median.
 
-This functions can be evaluated alongside the arithmetic oprations. eg. you can compute `6*(2^4) - 3*cbrt(9 * tan(3.14 / 2))`
+This functions can be evaluated alongside the arithmetic oprations. eg. you can compute `6*(2^4) - 3*cbrt(9 * tan(3.14 / 2))`.
 
 ### Matrix
 
-Supprts matrix operations like matix:
+Suppots operations on matrix which are: 
 
-* `Additions.`
-* `Subtraction.`
-* `Multiplication.`
-* `Determinants.`
-* `Transpose.`
-* `Inverse.`
+* `Addition`
+* `Subtraction`
+* `Multiplication`
+* `Determinant`
+* `Transpose`
+* `Inverse`
 
 Can also perform matrix algorithms like
 * `Reduced row echelon form.`
@@ -67,17 +69,16 @@ Can also perform matrix algorithms like
 
 ### Complex-numbers
 
-Supporst basic oprations on complex numbers such as
+Supports basic oprations on complex numbers such as
 
-* `Addition.`
-* `Subtraction.`
-* `Multiplication.`
-* `Division.`
+* `Addition`
+* `Subtraction`
+* `Multiplication`
+* `Division`
 
 ### Prerequisites
 
 - Ensure that you have a C compiler installed on your system (e.g., GCC).
 
 ## Extra Information
-
-For extra informations on usage, chech the man page.
+For extra informations on usage, check the man page.
