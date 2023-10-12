@@ -1,6 +1,8 @@
 #ifndef SCILIB_H
 #define SCILIB_H
 
+typedef struct buffer *Buffer;
+#define __MAX_TOKEN_LEN__ 512
 /**
  * getexpr: Reads the expression to be evaluated from a file stream,
  *          tokenizes it and stores into an array which contains the type of the token.
@@ -9,6 +11,6 @@
  * 
  * Return: Returns a pointer to an array of structures containing the tokens and their types.
 */
-struct buffer *getexpr(FILE *stream);
-
+Buffer *getexpr(FILE *stream);
+int storeinbuffer(int token, int flag, int index);
 #endif

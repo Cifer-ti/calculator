@@ -5,7 +5,6 @@
 #include <string.h>
 #include "scilib.h"
 
-#define MAX_TOKEN_LEN 512
 #define OPERATOR 0
 #define ANYTHING_ELSE 1
 #define _END '?'    /* Marks the end of buffer array */
@@ -54,18 +53,20 @@ typedef enum {
 struct buffer {
     int token;
     int type_flag;
-}tokenbuffer[MAX_TOKEN_LEN];
+};
 
-struct buffer *getexpr(FILE *stream)
+Buffer tokenbuffer[__MAX_TOKEN_LEN__];
+
+Buffer *getexpr(FILE *stream)
 {
+
     int type_to_be_read = ANYTHING_ELSE;
-    int read, i;
+    int read, i = 0;
 
     while(read != EOF && read != '=') {
         if(type_to_be_read == ANYTHING_ELSE) {
             if(scanf("%d ", &read) == 1) {
-                tokenbuffer[i].token = read;
-                tokenbuffer[i++].type_flag = operand;
+                i = storeinbuffer(read, operand, i);
                 type_to_be_read = OPERATOR;
             }
             
@@ -79,8 +80,7 @@ struct buffer *getexpr(FILE *stream)
                 }
 
                 else {      /* if not then must be a left brace */
-                    tokenbuffer[i++].token = read;
-                    tokenbuffer[i++].type_flag = lbrace;
+                    i = storeinbuffer(read, lbrace, i);
                 } 
             }
         }
@@ -88,15 +88,34 @@ struct buffer *getexpr(FILE *stream)
         else if(type_to_be_read == OPERATOR) {
             while(isspace(read = getchar()) || read == '\t')
                 ;
-            
-            tokenbuffer[i].token = read;
-            tokenbuffer[i++].type_flag = operator;
+
+            i = storeinbuffer(read, operator, i);
             type_to_be_read = ANYTHING_ELSE;
         }
     }
 
-    tokenbuffer[--i].token = _END;
-    tokenbuffer[i].type_flag = end;
+    tokenbuffer[--i]->token = _END;
+    tokenbuffer[i]->type_flag = end;
+    
     return tokenbuffer;
 }
 
+int storeinbuffer(int token, int flag, int index)
+{
+    tokenbuffer[index]->token = token;
+    tokenbuffer[index++]->type_flag = flag;
+
+    return index;
+}
+
+int main(void)
+{
+    Buffer *p;
+
+    p = malloc(sizeof(struct buffer));
+
+    printf("Enter expresions: ");
+    p = getexpr(stdin);
+    
+    return 0;
+}
