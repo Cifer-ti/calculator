@@ -6,11 +6,12 @@
 #include "stack.h"
 
 struct stack {
-    Buffer content[__MAX_TOKEN_LEN__];
+    Buffer content;
     int top;
+    int size;
 };
 
-int stackinit(Stack s)
+int stackinit(Stack s,int size)
 {
     s = malloc(sizeof(struct stack));
 
@@ -19,19 +20,34 @@ int stackinit(Stack s)
         return -1;
     }
     
+    s->content = malloc(sizeof(Buffer) * size);
+
+    if(s->content == NULL) {
+        fprintf(stderr, "Error: Stack could not be allocated\n");
+        free(s);
+        return -1;
+    }
+
+    s->size = size;
     s->top = 0;
     return 0;
 }
 
 void stakcpush(Stack s, Buffer token)
 {
-    /* add check for stack overflow later*/
+    if(isstackfull(s)) {
+        fprintf(stderr, "Overflow occured in stack. \ncore dumped\n");
+        exit(EXIT_FAILURE);
+    }
     s->content[s->top++] = token;
 }
 
 Buffer stackpop(Stack s)
 {   
-    /* add check for stack underflow later */
+    if(isStackempty(s)) {
+        fprintf(stderr, "Underflow occured in stack. \ncore dumped\n");
+        exit(EXIT_FAILURE);
+    }
     return s->content[s->top--];
 }
 
@@ -42,15 +58,9 @@ Buffer stacktop(Stack s)
 
 bool isstackfull(Stack s)
 {
-    if(s->top >= __MAX_TOKEN_LEN__)
-        return true;
-
-    return false;
+   return s->top >= s->size
 }
 bool isStackempty(Stack s)
 {
-    if(s->top < 0)
-        return true;
-        
-    return false;
+    return s->top < 0;
 }
