@@ -46,7 +46,7 @@ Computes trigonometric functions, and other functions listed below.
 * `sum(...)` Summation.
 * `mean(...)` Mean.
 * `var(...)` Variance.
-* `avg(...)` Mean.
+* `avrg(...)` Mean.
 * `median(...)` Median.
 
 This functions can be evaluated alongside the arithmetic oprations. eg. you can compute `6*(2^4) - 3*cbrt(9 * tan(3.14 / 2))`.

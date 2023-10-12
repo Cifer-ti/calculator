@@ -18,6 +18,7 @@ typedef enum {
     operator,
     operand,
     lbrace,
+    rbrace,
     function,
     end,
 }type;
@@ -77,10 +78,8 @@ int getexpr(FILE *stream)
                     ;
                 /* check if it's a fuctions */
                 if(isalpha(read)) {
-                    printf("before: %d\n", i);
                     if(fsa(&read, &i) != FOUND)
                         return READ_ERR;
-                    printf("After: %d\n", i);
                 }
 
                 else {      /* if not then must be a left brace */
@@ -92,9 +91,12 @@ int getexpr(FILE *stream)
         else if(type_to_be_read == OPERATOR) {
             while(isspace(read = getchar()) || read == '\t')
                 ;
-
-            storeinbuffer(read, operator, &i);
-            type_to_be_read = ANYTHING_ELSE;
+            if(read == ')')
+                storeinbuffer(read, rbrace, &i);
+            else {
+                storeinbuffer(read, operator, &i);
+                type_to_be_read = ANYTHING_ELSE;
+            }
         }
     }
 
