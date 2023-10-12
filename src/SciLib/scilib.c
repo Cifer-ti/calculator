@@ -1,5 +1,6 @@
 /* The routines in this library manages the scientific computations for this calculator */
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +41,7 @@ typedef enum {
     _sum,
     _mean,
     _var,
-    _avg,
+    _avrg,
     _median,
 }functios_id;
 
@@ -55,9 +56,9 @@ struct buffer {
     int type_flag;
 };
 
-Buffer tokenbuffer[__MAX_TOKEN_LEN__];
+struct buffer tokenbuffer[__MAX_TOKEN_LEN__];
 
-Buffer *getexpr(FILE *stream)
+int getexpr(FILE *stream)
 {
 
     int type_to_be_read = ANYTHING_ELSE;
@@ -66,7 +67,7 @@ Buffer *getexpr(FILE *stream)
     while(read != EOF && read != '=') {
         if(type_to_be_read == ANYTHING_ELSE) {
             if(scanf("%d ", &read) == 1) {
-                i = storeinbuffer(read, operand, i);
+               storeinbuffer(read, operand, &i);
                 type_to_be_read = OPERATOR;
             }
             
@@ -76,11 +77,14 @@ Buffer *getexpr(FILE *stream)
                     ;
                 /* check if it's a fuctions */
                 if(isalpha(read)) {
-                    /* probably a function */
+                    printf("before: %d\n", i);
+                    if(fsa(&read, &i) != FOUND)
+                        return READ_ERR;
+                    printf("After: %d\n", i);
                 }
 
                 else {      /* if not then must be a left brace */
-                    i = storeinbuffer(read, lbrace, i);
+                    storeinbuffer(read, lbrace, &i);
                 } 
             }
         }
@@ -89,33 +93,127 @@ Buffer *getexpr(FILE *stream)
             while(isspace(read = getchar()) || read == '\t')
                 ;
 
-            i = storeinbuffer(read, operator, i);
+            storeinbuffer(read, operator, &i);
             type_to_be_read = ANYTHING_ELSE;
         }
     }
 
-    tokenbuffer[--i]->token = _END;
-    tokenbuffer[i]->type_flag = end;
-    
-    return tokenbuffer;
+    tokenbuffer[--i].token = _END;
+    tokenbuffer[i].type_flag = end;
 }
 
-int storeinbuffer(int token, int flag, int index)
+void storeinbuffer(int token, int flag, int *index)
 {
-    tokenbuffer[index]->token = token;
-    tokenbuffer[index++]->type_flag = flag;
+    tokenbuffer[*index].token = token;
+    tokenbuffer[*index].type_flag = flag;
+    *index += 1;
+}
 
-    return index;
+int fsa(int *ch, int *index)
+{
+    char *str;
+    int i = 0;
+
+    str[i] = *ch;
+
+    while((*ch = getchar()) != '(' && !isspace(*ch))
+        str[++i] = *ch;
+
+    if(isspace(*ch))
+        return false;
+    
+    str[++i] = '\0';
+
+    printf("%s\n", str);
+    if(strncmp(str, "abs", 3) == 0) {
+        storeinbuffer(_abs, function, index);
+        return FOUND;
+    }
+    else if(strncmp(str, "floor", 5) == 0) {
+        storeinbuffer(_rounddwn, function, index);
+        return FOUND;
+    }
+    else if(strncmp(str, "ceil", 4) == 0) {
+        storeinbuffer(_roundup, function, index);
+        return FOUND;
+    }
+    else if(strncmp(str, "sin", 3) == 0) {
+        storeinbuffer(_sin, function, index);
+        return FOUND;
+    }
+    else if(strncmp(str, "cos", 3) == 0) {
+        storeinbuffer(_cos, function, index);
+        return FOUND;
+    }
+    else if(strncmp(str, "tan", 3) == 0) {
+        storeinbuffer(_tan, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "arcsin", 6) == 0) {
+        storeinbuffer(_arcsin, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "arccos", 6) == 0) {
+        storeinbuffer(_arccos, function, index);
+        return FOUND;
+    }    
+    else if(strncmp(str, "arctan", 6) == 0) {
+        storeinbuffer(_arctan, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "sqrt", 4) == 0) {
+        storeinbuffer(_sqrt, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "cbrt", 4) == 0) {
+        storeinbuffer(_cbrt, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "log", 3) == 0) {
+        storeinbuffer(_log, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "min", 3) == 0) {
+        storeinbuffer(_min, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "max", 3) == 0) {
+        storeinbuffer(_max, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "sum", 3) == 0) {
+        storeinbuffer(_sum, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "avrg", 3) == 0) {
+        storeinbuffer(_avrg, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "mean", 4) == 0) {
+        storeinbuffer(_mean, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "median", 6) == 0) {
+        storeinbuffer(_median, function, index);
+        return FOUND;
+    }   
+    else if(strncmp(str, "var", 3) == 0) {
+        storeinbuffer(_var, function, index);
+        return FOUND;
+    }
+    else if(strncmp(str, "exp", 3) == 0) {
+        storeinbuffer(_exp, function, index);
+        return FOUND;
+    }   
+    else
+        return NOT_FOUND;
 }
 
 int main(void)
 {
-    Buffer *p;
-
-    p = malloc(sizeof(struct buffer));
-
     printf("Enter expresions: ");
-    p = getexpr(stdin);
+    if(getexpr(stdin) == READ_ERR)
+        printf("Error in read Aborted");
     
     return 0;
 }
