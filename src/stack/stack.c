@@ -33,7 +33,7 @@ int stackinit(Stack s,int size)
     return 0;
 }
 
-void stakcpush(Stack s, Buffer token)
+void stackpush(Stack s, struct buffer token)
 {
     if(isstackfull(s)) {
         fprintf(stderr, "Overflow occured in stack. \ncore dumped\n");
@@ -42,7 +42,7 @@ void stakcpush(Stack s, Buffer token)
     s->content[s->top++] = token;
 }
 
-Buffer stackpop(Stack s)
+struct buffer stackpop(Stack s)
 {   
     if(isStackempty(s)) {
         fprintf(stderr, "Underflow occured in stack. \ncore dumped\n");

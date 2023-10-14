@@ -23,7 +23,7 @@ int stackinit(Stack s,int size);
  * token- The item to be pushed.
  * 
 */
-void stakcpush(Stack s, Buffer token);
+void stackpush(Stack s, struct buffer token);
 
 /**
  * stackpop: Pops an item from stack.
@@ -32,7 +32,7 @@ void stakcpush(Stack s, Buffer token);
  * 
  * Return: The item poped.
 */
-Buffer stackpop(Stack s);
+struct buffer stackpop(Stack s);
 
 /**
  * stacktop: Checks the top item of stack.
