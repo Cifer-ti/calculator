@@ -1,5 +1,6 @@
 /* The routines in this library manages the scientific computations for this calculator */
 #include <ctype.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -277,7 +278,7 @@ void postfixConvert(void)
     struct buffer p;
 
     while(tokenbuffer[i].type_flag != end && tokenbuffer[i].token != _END) {
-        p = tokenbuffer[i];
+        p = tokenbuffer[i++];
         switch(p.type_flag) {
             case operator:
             case lbrace:
@@ -300,6 +301,66 @@ void postfixConvert(void)
 
     while(!isStackempty(postfixStack))
         postfixbuffer[j++] = stackpop(postfixStack);
+}
+
+int evaluate(void)
+{
+    struct buffer temp;
+    struct buffer tempans;
+    struct buffer p;
+    int i, j;
+
+    while((p = postfixbuffer[i++]).type_flag != end) {
+
+        switch(p.type_flag) {
+            case operator:
+                switch(p.token) {
+                    case '+':
+                        temp = stackpop(postfixStack);
+                        tempans.digitToken = temp.digitToken + stackpop(postfixStack).digitToken;
+                        stackpush(postfixStack, tempans);
+                        break;
+                    
+                    case '-':
+                        temp = stackpop(postfixStack);
+                        tempans.digitToken = temp.digitToken - stackpop(postfixStack).digitToken;
+                        stackpush(postfixStack, tempans);
+                        break;
+                    
+                    case '/':
+                        temp = stackpop(postfixStack);
+                        if(temp.digitToken == 0) {
+                            fprintf(stderr, "Math Error: Division by zero\n");
+                            exit(EXIT_FAILURE);
+                        }
+                        tempans.digitToken = temp.digitToken + stackpop(postfixStack).digitToken;
+                        stackpush(postfixStack, tempans);
+                        break;
+                    
+                    case '*':
+                        temp = stackpop(postfixStack);
+                        tempans.digitToken = temp.digitToken * stackpop(postfixStack).digitToken;
+                        stackpush(postfixStack, tempans);
+                        break;
+                    
+                    case '^':
+                        temp = stackpop(postfixStack);
+                        tempans.digitToken = pow(stackpop(postfixStack).digitToken, temp.digitToken);
+                        stackpush(postfixStack, tempans);
+                        break;
+                } 
+                break;
+
+            //case function:
+                /* function evaluation routines */
+            
+            default:
+                stackpush(postfixStack, p);
+                break;
+        }
+    }
+
+    
 }
 
 int main(void)
