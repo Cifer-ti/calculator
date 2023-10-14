@@ -6,6 +6,12 @@
 #define FOUND 1
 #define READ_ERR -99
 
+struct buffer {
+    int token;
+    double digitToken;
+    int type_flag;
+};
+
 typedef struct buffer *Buffer;
 /**
  * getexpr: Reads the expression to be evaluated from a file stream,
@@ -16,6 +22,10 @@ typedef struct buffer *Buffer;
  * Return: Returns a pointer to an array of structures containing the tokens and their types.
 */
 int getexpr(FILE *stream);
-void storeinbuffer(int token, int flag, int *index);
-int fsa(int *ch, int *index);
+
+/**
+ * postfixconvert: Converts the input into postfix notation.
+*/
+void postfixConvert(void);
+
 #endif

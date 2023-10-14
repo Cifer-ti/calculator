@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "scilib.h"
+#include "../stack/stack.h"
 
 #define OPERATOR 0
 #define ANYTHING_ELSE 1
@@ -52,66 +53,20 @@ typedef enum {
  * that shows stores the input, and a flag for
  * the type of input.
 */
-struct buffer {
-    int token;
-    int type_flag;
-};
+
 
 struct buffer tokenbuffer[__MAX_TOKEN_LEN__];
+struct buffer postfixbuffer[__MAX_TOKEN_LEN__];
+Stack postfixStack;
 
-int getexpr(FILE *stream)
-{
-
-    int type_to_be_read = ANYTHING_ELSE;
-    int read, i = 0;
-
-    while(read != EOF && read != '=') {
-        if(type_to_be_read == ANYTHING_ELSE) {
-            if(scanf("%d ", &read) == 1) {
-               storeinbuffer(read, operand, &i);
-                type_to_be_read = OPERATOR;
-            }
-            
-            /* if first thing read isn't a digit */
-            else {
-                while(isspace(read = getchar()) || read == '\t')
-                    ;
-                /* check if it's a fuctions */
-                if(isalpha(read)) {
-                    if(fsa(&read, &i) != FOUND)
-                        return READ_ERR;
-                }
-
-                else {      /* if not then must be a left brace */
-                    storeinbuffer(read, lbrace, &i);
-                } 
-            }
-        }
-
-        else if(type_to_be_read == OPERATOR) {
-            while(isspace(read = getchar()) || read == '\t')
-                ;
-            if(read == ')')
-                storeinbuffer(read, rbrace, &i);
-            else {
-                storeinbuffer(read, operator, &i);
-                type_to_be_read = ANYTHING_ELSE;
-            }
-        }
-    }
-
-    tokenbuffer[--i].token = _END;
-    tokenbuffer[i].type_flag = end;
-}
-
-void storeinbuffer(int token, int flag, int *index)
+static void storeinbuffer(int token, int flag, int *index)
 {
     tokenbuffer[*index].token = token;
     tokenbuffer[*index].type_flag = flag;
     *index += 1;
 }
 
-int fsa(int *ch, int *index)
+static int checkfunction(int *ch, int *index)
 {
     char *str;
     int i = 0;
@@ -209,6 +164,142 @@ int fsa(int *ch, int *index)
     }   
     else
         return NOT_FOUND;
+}
+
+int getexpr(FILE *stream)
+{
+
+    int type_to_be_read = ANYTHING_ELSE;
+    int read, i = 0;
+    double digit_read;
+
+    while(read != EOF && read != '=') {
+        if(type_to_be_read == ANYTHING_ELSE) {
+            if(scanf("%lf ", &digit_read) == 1) {
+               tokenbuffer[i].digitToken;
+               tokenbuffer[--i].type_flag = operand;
+                type_to_be_read = OPERATOR;
+            }
+            
+            /* if first thing read isn't a digit */
+            else {
+                while(isspace(read = getchar()) || read == '\t')
+                    ;
+                /* check if it's a fuctions */
+                if(isalpha(read)) {
+                    if(checkfunction(&read, &i) != FOUND)
+                        return READ_ERR;
+                }
+
+                else {      /* if not then must be a left brace */
+                    storeinbuffer(read, lbrace, &i);
+                } 
+            }
+        }
+
+        else if(type_to_be_read == OPERATOR) {
+            while(isspace(read = getchar()) || read == '\t')
+                ;
+            if(read == ')')
+                storeinbuffer(read, rbrace, &i);
+            else {
+                storeinbuffer(read, operator, &i);
+                type_to_be_read = ANYTHING_ELSE;
+            }
+        }
+    }
+
+    tokenbuffer[--i].token = _END;
+    tokenbuffer[i].type_flag = end;
+    return i;
+}
+
+
+
+static int icp(int optn)
+{
+    switch(optn) {
+        case '(':
+            return 4;
+            break;
+
+        case '+':
+        case '-':
+            return 1;
+            break;
+
+        case '*':
+        case '/':
+            return 2;
+            break;
+
+        case '^':
+            return 4;
+            break;
+
+        default:
+            return -1;
+            break;
+    }
+}
+
+static int isp(int optr)
+{
+    switch(optr) {
+        case '(':
+            return 0;
+            break;
+
+        case '+':
+        case '-':
+            return 1;
+            break;
+
+        case '*':
+        case '/':
+            return 2;
+            break;
+
+        case '^':
+            return 3;
+            break;
+
+        default:
+            return -1;
+            break;
+    }
+}
+
+void postfixConvert(void)
+{
+    int i = 0, j = 0;
+    struct buffer temp;
+    struct buffer p;
+
+    while(tokenbuffer[i].type_flag != end && tokenbuffer[i].token != _END) {
+        p = tokenbuffer[i];
+        switch(p.type_flag) {
+            case operator:
+            case lbrace:
+                while(!isStackempty(postfixStack) && isp(stacktop(postfixStack)->token) >= icp(p.token))
+                    postfixbuffer[j++] = stackpop(postfixStack);
+                
+                stackpush(postfixStack, p);
+                break;
+            
+            case rbrace:
+                while((temp = stackpop(postfixStack)).type_flag != lbrace)
+                    postfixbuffer[j++] = temp;
+                break;
+            
+            default:
+                postfixbuffer[j++] = p;
+                break;
+        }
+    }
+
+    while(!isStackempty(postfixStack))
+        postfixbuffer[j++] = stackpop(postfixStack);
 }
 
 int main(void)
