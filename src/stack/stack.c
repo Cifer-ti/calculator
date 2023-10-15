@@ -11,13 +11,15 @@ struct stack {
     int size;
 };
 
-int stackinit(Stack s,int size)
+Stack stackinit(int size)
 {
+    Stack s;
+
     s = malloc(sizeof(struct stack));
 
     if(s == NULL) {
         fprintf(stderr, "Error: Stack could not be allcoated\n");
-        return -1;
+        exit(EXIT_FAILURE);
     }
     
     s->content = malloc(sizeof(Buffer) * size);
@@ -25,12 +27,13 @@ int stackinit(Stack s,int size)
     if(s->content == NULL) {
         fprintf(stderr, "Error: Stack could not be allocated\n");
         free(s);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
     s->size = size;
-    s->top = 0;
-    return 0;
+    s->top = -1;
+
+    return s;
 }
 
 void stackpush(Stack s, struct buffer token)
@@ -39,7 +42,7 @@ void stackpush(Stack s, struct buffer token)
         fprintf(stderr, "Overflow occured in stack. \ncore dumped\n");
         exit(EXIT_FAILURE);
     }
-    s->content[s->top++] = token;
+    s->content[++s->top] = token;
 }
 
 struct buffer stackpop(Stack s)
@@ -51,16 +54,17 @@ struct buffer stackpop(Stack s)
     return s->content[s->top--];
 }
 
-Buffer stacktop(Stack s)
+struct buffer stacktop(Stack s)
 {
     return s->content[s->top];
 }
 
 bool isstackfull(Stack s)
 {
-   return s->top >= s->size
+   return s->top >= s->size;
 }
+
 bool isStackempty(Stack s)
 {
-    return s->top < 0;
+    return (s->top < 0);
 }

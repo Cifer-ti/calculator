@@ -14,7 +14,8 @@ typedef struct stack *Stack;
  * 
  * Return: 0 if creation was successful else -1.
 */
-int stackinit(Stack s,int size);
+
+Stack stackinit(int size);
 
 /**
  * stackpush: Pushes an item into the stack.
@@ -42,7 +43,7 @@ struct buffer stackpop(Stack s);
  * 
  * Return: Returns the top item.
 */
-Buffer stacktop(Stack s);
+struct buffer stacktop(Stack s);
 
 /**
  * isstackfull: Checks if stack is full.

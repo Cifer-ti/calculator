@@ -29,9 +29,9 @@ typedef enum {
     _sin = 130,
     _cos,
     _tan,
-    _arcsin,
-    _arccos,
-    _arctan,
+    _asin,
+    _acos,
+    _atan,
     _sqrt,
     _cbrt,
     _log,
@@ -107,16 +107,16 @@ static int checkfunction(int *ch, int *index)
         storeinbuffer(_tan, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "arcsin", 6) == 0) {
-        storeinbuffer(_arcsin, function, index);
+    else if(strncmp(str, "asin", 6) == 0) {
+        storeinbuffer(_asin, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "arccos", 6) == 0) {
-        storeinbuffer(_arccos, function, index);
+    else if(strncmp(str, "acos", 6) == 0) {
+        storeinbuffer(_acos, function, index);
         return FOUND;
     }    
-    else if(strncmp(str, "arctan", 6) == 0) {
-        storeinbuffer(_arctan, function, index);
+    else if(strncmp(str, "atan", 6) == 0) {
+        storeinbuffer(_atan, function, index);
         return FOUND;
     }   
     else if(strncmp(str, "sqrt", 4) == 0) {
@@ -177,8 +177,8 @@ int getexpr(FILE *stream)
     while(read != EOF && read != '=') {
         if(type_to_be_read == ANYTHING_ELSE) {
             if(scanf("%lf ", &digit_read) == 1) {
-               tokenbuffer[i].digitToken;
-               tokenbuffer[--i].type_flag = operand;
+               tokenbuffer[i].digitToken = digit_read;
+               tokenbuffer[i++].type_flag = operand;
                 type_to_be_read = OPERATOR;
             }
             
@@ -271,6 +271,7 @@ static int isp(int optr)
     }
 }
 
+
 void postfixConvert(void)
 {
     int i = 0, j = 0;
@@ -282,15 +283,19 @@ void postfixConvert(void)
         switch(p.type_flag) {
             case operator:
             case lbrace:
-                while(!isStackempty(postfixStack) && isp(stacktop(postfixStack)->token) >= icp(p.token))
+                while(!isStackempty(postfixStack) && isp(stacktop(postfixStack).token) >= icp(p.token))
                     postfixbuffer[j++] = stackpop(postfixStack);
                 
                 stackpush(postfixStack, p);
                 break;
             
             case rbrace:
-                while((temp = stackpop(postfixStack)).type_flag != lbrace)
+                while((temp = stackpop(postfixStack)).type_flag != lbrace || !isStackempty(postfixStack))
                     postfixbuffer[j++] = temp;
+                break;
+            
+            case function:
+                stackpush(postfixStack, p);
                 break;
             
             default:
@@ -301,14 +306,89 @@ void postfixConvert(void)
 
     while(!isStackempty(postfixStack))
         postfixbuffer[j++] = stackpop(postfixStack);
+    
+    postfixbuffer[j].type_flag = end;
 }
 
-int evaluate(void)
+void evaluatefuctions(struct buffer b) {
+    struct buffer temp;
+    struct buffer tempans;
+
+    switch(b.token) {
+        case _sin:
+            tempans.digitToken = sin(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _cos:
+            tempans.digitToken = cos(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _tan:
+            tempans.digitToken = tan(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+
+        case _asin:
+            tempans.digitToken = asin(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _acos:
+            tempans.digitToken = acos(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _atan:
+            tempans.digitToken = atan(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _sqrt:
+            tempans.digitToken = sqrt(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+
+        case _cbrt:
+            tempans.digitToken = cbrt(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _log:
+            tempans.digitToken = log10(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _exp:
+            tempans.digitToken = exp(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _abs:
+            tempans.digitToken = (double) abs( (int) stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _roundup:
+            tempans.digitToken = ceil(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+        
+        case _rounddwn:
+            tempans.digitToken = floor(stackpop(postfixStack).digitToken);
+            stackpush(postfixStack, tempans);
+            break;
+
+    }
+}
+
+double evaluate(void)
 {
     struct buffer temp;
     struct buffer tempans;
     struct buffer p;
-    int i, j;
+    int i = 0, j;
 
     while((p = postfixbuffer[i++]).type_flag != end) {
 
@@ -351,8 +431,8 @@ int evaluate(void)
                 } 
                 break;
 
-            //case function:
-                /* function evaluation routines */
+            case function:
+                evaluatefuctions(p);
             
             default:
                 stackpush(postfixStack, p);
@@ -360,14 +440,26 @@ int evaluate(void)
         }
     }
 
+        return (stackpop(postfixStack).digitToken);
     
 }
 
+
 int main(void)
-{
+{   
+    double ans;
+
+    postfixStack = stackinit(512);
+
     printf("Enter expresions: ");
     if(getexpr(stdin) == READ_ERR)
         printf("Error in read Aborted");
+    
+    postfixConvert();
+
+    ans = evaluate();
+
+    printf("Answer = %lf\n", ans);
     
     return 0;
 }
