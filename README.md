@@ -31,9 +31,9 @@ Computes trigonometric functions, and other functions listed below.
 * `sin(...)` Sine.
 * `cos(...)` Cosine.
 * `tan(...)` Tangent.
-* `arcsin(...)` Arcsine.
-* `arccos(...)` Arccosine.
-* `arctan(...)` Arctangent.
+* `asin(...)` Arcsine.
+* `aros(...)` Arccosine.
+* `atan(...)` Arctangent.
 * `sqrt(...)` Square root.
 * `cbrt(...)` Cube root.
 * `log(...)` Logarithm.
