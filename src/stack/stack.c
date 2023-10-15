@@ -39,7 +39,7 @@ Stack stackinit(int size)
 void stackpush(Stack s, struct buffer token)
 {
     if(isstackfull(s)) {
-        fprintf(stderr, "Overflow occured in stack. \ncore dumped\n");
+        fprintf(stderr, "Error: Stack underflow occured. (core dumped)\n");
         exit(EXIT_FAILURE);
     }
     s->content[++s->top] = token;
@@ -48,10 +48,10 @@ void stackpush(Stack s, struct buffer token)
 struct buffer stackpop(Stack s)
 {   
     if(isStackempty(s)) {
-        fprintf(stderr, "Underflow occured in stack. \ncore dumped\n");
+        fprintf(stderr, "Error: Stack Underflow occured. (core dumped)\n");
         exit(EXIT_FAILURE);
     }
-    return s->content[s->top--];
+    return (s->content[s->top--]);
 }
 
 struct buffer stacktop(Stack s)

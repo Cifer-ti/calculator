@@ -8,6 +8,7 @@
 #include "scilib.h"
 #include "../stack/stack.h"
 
+#define PI 3.14159265
 #define OPERATOR 0
 #define ANYTHING_ELSE 1
 #define _END '?'    /* Marks the end of buffer array */
@@ -82,7 +83,6 @@ static int checkfunction(int *ch, int *index)
     
     str[++i] = '\0';
 
-    printf("%s\n", str);
     if(strncmp(str, "abs", 3) == 0) {
         storeinbuffer(_abs, function, index);
         return FOUND;
@@ -190,6 +190,8 @@ int getexpr(FILE *stream)
                 if(isalpha(read)) {
                     if(checkfunction(&read, &i) != FOUND)
                         return READ_ERR;
+                    storeinbuffer(read, lbrace, &i);
+                    
                 }
 
                 else {      /* if not then must be a left brace */
@@ -290,7 +292,7 @@ void postfixConvert(void)
                 break;
             
             case rbrace:
-                while((temp = stackpop(postfixStack)).type_flag != lbrace || !isStackempty(postfixStack))
+                while((!isStackempty(postfixStack)) && (temp = stackpop(postfixStack)).type_flag != lbrace)
                     postfixbuffer[j++] = temp;
                 break;
             
@@ -313,10 +315,12 @@ void postfixConvert(void)
 void evaluatefuctions(struct buffer b) {
     struct buffer temp;
     struct buffer tempans;
+    double radians;
 
     switch(b.token) {
         case _sin:
-            tempans.digitToken = sin(stackpop(postfixStack).digitToken);
+            radians = (stackpop(postfixStack).digitToken) * PI / 180.0;
+            tempans.digitToken = sin(radians);
             stackpush(postfixStack, tempans);
             break;
         
@@ -383,7 +387,7 @@ void evaluatefuctions(struct buffer b) {
     }
 }
 
-double evaluate(void)
+void evaluate(void)
 {
     struct buffer temp;
     struct buffer tempans;
@@ -433,6 +437,7 @@ double evaluate(void)
 
             case function:
                 evaluatefuctions(p);
+                break;
             
             default:
                 stackpush(postfixStack, p);
@@ -440,7 +445,7 @@ double evaluate(void)
         }
     }
 
-        return (stackpop(postfixStack).digitToken);
+        //return (stackpop(postfixStack).digitToken);
     
 }
 
@@ -452,12 +457,15 @@ int main(void)
     postfixStack = stackinit(512);
 
     printf("Enter expresions: ");
-    if(getexpr(stdin) == READ_ERR)
-        printf("Error in read Aborted");
+    if(getexpr(stdin) == READ_ERR) {
+        printf("Error in read, Program aborted\n");
+        exit(EXIT_FAILURE);
+    }
     
     postfixConvert();
 
-    ans = evaluate();
+    evaluate();
+    ans = stackpop(postfixStack).digitToken;
 
     printf("Answer = %lf\n", ans);
     
