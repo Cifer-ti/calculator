@@ -68,3 +68,8 @@ bool isStackempty(Stack s)
 {
     return (s->top < 0);
 }
+
+void pri(Stack s)
+{
+    printf("%d\n", s->top);
+}

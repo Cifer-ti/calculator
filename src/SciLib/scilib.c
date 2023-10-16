@@ -316,6 +316,7 @@ void evaluatefuctions(struct buffer b) {
     struct buffer temp;
     struct buffer tempans;
     double radians;
+    b.type_flag = 0;
 
     switch(b.token) {
         case _sin:
@@ -387,11 +388,12 @@ void evaluatefuctions(struct buffer b) {
     }
 }
 
-void evaluate(void)
+struct buffer evaluate(void)
 {
     struct buffer temp;
     struct buffer tempans;
     struct buffer p;
+    double radians;
     int i = 0, j;
 
     while((p = postfixbuffer[i++]).type_flag != end) {
@@ -401,29 +403,31 @@ void evaluate(void)
                 switch(p.token) {
                     case '+':
                         temp = stackpop(postfixStack);
-                        tempans.digitToken = temp.digitToken + stackpop(postfixStack).digitToken;
+                        tempans.digitToken = stackpop(postfixStack).digitToken + temp.digitToken;
                         stackpush(postfixStack, tempans);
                         break;
                     
                     case '-':
                         temp = stackpop(postfixStack);
-                        tempans.digitToken = temp.digitToken - stackpop(postfixStack).digitToken;
+                        tempans.digitToken = stackpop(postfixStack).digitToken - temp.digitToken;
                         stackpush(postfixStack, tempans);
                         break;
                     
                     case '/':
                         temp = stackpop(postfixStack);
+
                         if(temp.digitToken == 0) {
                             fprintf(stderr, "Math Error: Division by zero\n");
                             exit(EXIT_FAILURE);
                         }
-                        tempans.digitToken = temp.digitToken + stackpop(postfixStack).digitToken;
+
+                        tempans.digitToken = stackpop(postfixStack).digitToken / temp.digitToken;
                         stackpush(postfixStack, tempans);
-                        break;
+                        break;stackpop(postfixStack).digitToken;
                     
                     case '*':
                         temp = stackpop(postfixStack);
-                        tempans.digitToken = temp.digitToken * stackpop(postfixStack).digitToken;
+                        tempans.digitToken = stackpop(postfixStack).digitToken * temp.digitToken;
                         stackpush(postfixStack, tempans);
                         break;
                     
@@ -436,23 +440,30 @@ void evaluate(void)
                 break;
 
             case function:
-                evaluatefuctions(p);
+                //evaluatefuctions(p);
+                pri(postfixStack);
+                radians = (stackpop(postfixStack).digitToken) * PI / 180.0;
+                pri(postfixStack);
+                tempans.digitToken = sin(radians);
+                stackpush(postfixStack, tempans);
+                pri(postfixStack);
                 break;
             
             default:
                 stackpush(postfixStack, p);
+                pri(postfixStack);
                 break;
         }
     }
 
-        //return (stackpop(postfixStack).digitToken);
+        return (stackpop(postfixStack));
     
 }
 
 
 int main(void)
 {   
-    double ans;
+    struct buffer ans;
 
     postfixStack = stackinit(512);
 
@@ -464,10 +475,11 @@ int main(void)
     
     postfixConvert();
 
-    evaluate();
-    ans = stackpop(postfixStack).digitToken;
+    pri(postfixStack);
+    ans = evaluate();
 
-    printf("Answer = %lf\n", ans);
+
+    printf("Answer = %lf\n", ans.digitToken);
     
     return 0;
 }

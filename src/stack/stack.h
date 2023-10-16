@@ -63,4 +63,6 @@ bool isstackfull(Stack s);
 */
 bool isStackempty(Stack s);
 
+void pri(Stack s);
+
 #endif
