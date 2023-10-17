@@ -28,4 +28,6 @@ int getexpr(FILE *stream);
 */
 void postfixConvert(void);
 
+struct buffer evaluate(void);
+
 #endif

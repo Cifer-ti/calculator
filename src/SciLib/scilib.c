@@ -61,6 +61,8 @@ struct buffer tokenbuffer[__MAX_TOKEN_LEN__];
 struct buffer postfixbuffer[__MAX_TOKEN_LEN__];
 Stack postfixStack;
 
+int postind = 0;
+
 static void storeinbuffer(int token, int flag, int *index)
 {
     tokenbuffer[*index].token = token;
@@ -190,6 +192,8 @@ int getexpr(FILE *stream)
                 if(isalpha(read)) {
                     if(checkfunction(&read, &i) != FOUND)
                         return READ_ERR;
+                    /* When the checkfuction returns FOUND, the read most have already read
+                    the next token which is the lbrace probaby */
                     storeinbuffer(read, lbrace, &i);
                     
                 }
@@ -292,7 +296,7 @@ void postfixConvert(void)
                 break;
             
             case rbrace:
-                while((!isStackempty(postfixStack)) && (temp = stackpop(postfixStack)).type_flag != lbrace)
+                while(/*(!isStackempty(postfixStack)) && */(temp = stackpop(postfixStack)).type_flag != lbrace)
                     postfixbuffer[j++] = temp;
                 break;
             
@@ -393,10 +397,8 @@ struct buffer evaluate(void)
     struct buffer temp;
     struct buffer tempans;
     struct buffer p;
-    double radians;
-    int i = 0, j;
 
-    while((p = postfixbuffer[i++]).type_flag != end) {
+    while((p = postfixbuffer[postind++]).type_flag != end) {
 
         switch(p.type_flag) {
             case operator:
@@ -440,13 +442,7 @@ struct buffer evaluate(void)
                 break;
 
             case function:
-                //evaluatefuctions(p);
-                pri(postfixStack);
-                radians = (stackpop(postfixStack).digitToken) * PI / 180.0;
-                pri(postfixStack);
-                tempans.digitToken = sin(radians);
-                stackpush(postfixStack, tempans);
-                pri(postfixStack);
+                evaluatefuctions(p);
                 break;
             
             default:
@@ -477,6 +473,8 @@ int main(void)
 
     pri(postfixStack);
     ans = evaluate();
+
+    pri(postfixStack);
 
 
     printf("Answer = %lf\n", ans.digitToken);
