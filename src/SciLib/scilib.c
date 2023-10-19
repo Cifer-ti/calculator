@@ -317,7 +317,6 @@ void postfixConvert(void)
 }
 
 void evaluatefuctions(struct buffer b) {
-    struct buffer temp;
     struct buffer tempans;
     double radians;
     b.type_flag = 0;

@@ -35,6 +35,9 @@ int main() {
     printf("Enter matrix1 plus matrix2: ");
     fgets(input, sizeof(input), stdin);
 
+    // Remove the newline character from the input
+    input[strcspn(input, "\n")] = '\0';
+
     char* equalsSign = strchr(input, '=');
     if (equalsSign == NULL) {
         printf("Invalid input format!\n");
