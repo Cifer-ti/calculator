@@ -75,15 +75,15 @@ static int checkfunction(int *ch, int *index)
     char *str;
     int i = 0;
 
-    str[i] = *ch;
+    str[i++] = *ch;
 
     while((*ch = getchar()) != '(' && !isspace(*ch))
-        str[++i] = *ch;
+        str[i++] = *ch;
 
     if(isspace(*ch))
         return false;
     
-    str[++i] = '\0';
+    str[i] = '\0';
 
     if(strncmp(str, "abs", 3) == 0) {
         storeinbuffer(_abs, function, index);
@@ -188,7 +188,7 @@ int getexpr(FILE *stream)
             else {
                 while(isspace(read = getchar()) || read == '\t')
                     ;
-                /* check if it's a fuctions */
+                /* check if it's a fuction */
                 if(isalpha(read)) {
                     if(checkfunction(&read, &i) != FOUND)
                         return READ_ERR;
@@ -284,7 +284,7 @@ void postfixConvert(void)
     struct buffer temp;
     struct buffer p;
 
-    while(tokenbuffer[i].type_flag != end && tokenbuffer[i].token != _END) {
+    while(tokenbuffer[i].token != _END) {
         p = tokenbuffer[i++];
         switch(p.type_flag) {
             case operator:
@@ -313,6 +313,8 @@ void postfixConvert(void)
     while(!isStackempty(postfixStack))
         postfixbuffer[j++] = stackpop(postfixStack);
     
+
+    postfixbuffer[j].token = _END;
     postfixbuffer[j].type_flag = end;
 }
 
@@ -397,8 +399,11 @@ struct buffer evaluate(void)
     struct buffer tempans;
     struct buffer p;
 
-    while((p = postfixbuffer[postind++]).type_flag != end) {
+    while(1) {
+        p = postfixbuffer[postind++];
 
+        if(p.type_flag == end)
+            break;
         switch(p.type_flag) {
             case operator:
                 switch(p.token) {
