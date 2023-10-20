@@ -327,7 +327,9 @@ void evaluatefuctions(struct buffer b) {
         case _sin:
             radians = (stackpop(postfixStack).digitToken) * PI / 180.0;
             tempans.digitToken = sin(radians);
+            pri(postfixStack);
             stackpush(postfixStack, tempans);
+            pri(postfixStack);
             break;
         
         case _cos:
@@ -465,7 +467,7 @@ int main(void)
 {   
     struct buffer ans;
 
-    postfixStack = stackinit(512);
+    postfixStack = stackinit(__MAX_TOKEN_LEN__);
 
     printf("Enter expresions: ");
     if(getexpr(stdin) == READ_ERR) {
