@@ -72,7 +72,7 @@ static void storeinbuffer(int token, int flag, int *index)
 
 static int checkfunction(int *ch, int *index)
 {
-    char *str;
+    char str[8];
     int i = 0;
 
     str[i++] = *ch;
@@ -291,7 +291,6 @@ void postfixConvert(void)
             case lbrace:
                 while(!isStackempty(postfixStack) && isp(stacktop(postfixStack).token) >= icp(p.token))
                     postfixbuffer[j++] = stackpop(postfixStack);
-                
                 stackpush(postfixStack, p);
                 break;
             
@@ -321,7 +320,6 @@ void postfixConvert(void)
 void evaluatefuctions(struct buffer b) {
     struct buffer tempans;
     double radians;
-    b.type_flag = 0;
 
     switch(b.token) {
         case _sin:
@@ -395,7 +393,7 @@ void evaluatefuctions(struct buffer b) {
     }
 }
 
-struct buffer evaluate(void)
+double evaluate(void)
 {
     struct buffer temp;
     struct buffer tempans;
@@ -458,14 +456,14 @@ struct buffer evaluate(void)
         }
     }
 
-        return (stackpop(postfixStack));
+        return (stackpop(postfixStack).digitToken);
     
 }
 
 
 int main(void)
 {   
-    struct buffer ans;
+    double ans;
 
     postfixStack = stackinit(__MAX_TOKEN_LEN__);
 
@@ -483,7 +481,7 @@ int main(void)
     pri(postfixStack);
 
 
-    printf("Answer = %lf\n", ans.digitToken);
+    printf("Answer = %lf\n", ans);
     
     return 0;
 }
