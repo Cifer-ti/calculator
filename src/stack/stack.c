@@ -51,7 +51,7 @@ struct buffer stackpop(Stack s)
         fprintf(stderr, "Error: Stack Underflow occured. (core dumped)\n");
         exit(EXIT_FAILURE);
     }
-     
+    
     return (s->content[s->top--]);
 }
 
