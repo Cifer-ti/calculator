@@ -295,8 +295,11 @@ void postfixConvert(void)
                 break;
             
             case rbrace:
-                while(/*(!isStackempty(postfixStack)) && */(temp = stackpop(postfixStack)).type_flag != lbrace)
+                while((!isStackempty(postfixStack)) && (temp = stackpop(postfixStack)).type_flag != lbrace)
                     postfixbuffer[j++] = temp;
+                
+                //while((!isStackempty(postfixStack)) && (temp = stackpop(postfixStack)).type_flag != lbrace)
+                    //postfixbuffer[j++] = temp;
                 break;
             
             case function:
