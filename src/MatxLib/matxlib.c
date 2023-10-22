@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +33,7 @@ void submatx(int row, int col, int matx[row][col], int res[row][col])
             res[i][j] -= matx[i][j];
     }    
 }
+
 void eval(int row, int col, int matx[row][col], int res[row][col], char op)
 {
     switch(op) {
@@ -71,6 +73,31 @@ char *parseMatrix(char* str, int col, int row, int matrix[row][col])
         token = strtok(NULL, ",;");
     }
     return s + 1;
+}
+
+void matxdimension(char *str, int *row, int *col)
+{
+    char *s = str;
+    bool colknown = false;
+
+    *row = 0;
+    *col = 0;
+
+    if(!colknown) {
+        while(*str != ';') {
+            if(*str != ',' && *str != ' ') 
+                *col += 1;
+            str++;
+        }
+        colknown = true;
+    }
+
+    while(*s != '\0') {
+        if(*s == ';')
+            *row += 1;
+        s++;
+    }
+
 }
 
 operation checkoperation(char *in)
@@ -114,9 +141,17 @@ int main(void)
     int col, row, ind = 0;
     operation r;
 
-    printf("Enter matrix dimensions(mxn): ");
-    scanf("%dx%d", &row, &col);
-    getchar();
+    //printf("Enter matrix dimensions(mxn): ");
+    //scanf("%dx%d", &row, &col);
+    //getchar();
+
+    printf("Enter matrix expression: ");
+    fgets(input, sizeof(input), stdin);
+
+    matxdimension(input, &row, &col);
+    printf("rowxcol: %dx%d", row, col);
+
+    return 0;
 
     int matx[row][col];
     int rest[row][col];
@@ -127,8 +162,6 @@ int main(void)
     }
     i = 0;
 
-    printf("Enter matrix expression: ");
-    fgets(input, sizeof(input), stdin);
 
     r = checkoperation(input);
 
