@@ -237,6 +237,7 @@ static int icp(int optn)
 
         case '*':
         case '/':
+        case '%':
             return 2;
             break;
 
@@ -264,6 +265,7 @@ static int isp(int optr)
 
         case '*':
         case '/':
+        case '%':
             return 2;
             break;
 
@@ -444,6 +446,12 @@ double evaluate(void)
                     case '^':
                         temp = stackpop(postfixStack);
                         tempans.digitToken = pow(stackpop(postfixStack).digitToken, temp.digitToken);
+                        stackpush(postfixStack, tempans);
+                        break;
+                    
+                    case '%':
+                        temp = stackpop(postfixStack);
+                        tempans.digitToken = (int)stackpop(postfixStack).digitToken % (int)temp.digitToken;
                         stackpush(postfixStack, tempans);
                         break;
                 } 
