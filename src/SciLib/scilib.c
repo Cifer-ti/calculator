@@ -288,8 +288,8 @@ void postfixConvert(void)
         p = tokenbuffer[i++];
         switch(p.type_flag) {
             case operator:
-            case lbrace:
-                while(!isStackempty(postfixStack) && isp(stacktop(postfixStack).token) >= icp(p.token))
+                while(!isStackempty(postfixStack) && (isp(stacktop(postfixStack).token) >= icp(p.token)
+                      || stacktop(postfixStack).type_flag == function))
                     postfixbuffer[j++] = stackpop(postfixStack);
                 stackpush(postfixStack, p);
                 break;
@@ -303,6 +303,7 @@ void postfixConvert(void)
                 break;
             
             case function:
+            case lbrace:
                 stackpush(postfixStack, p);
                 break;
             
