@@ -12,6 +12,7 @@
 #define OPERATOR 0
 #define ANYTHING_ELSE 1
 #define _END '?'    /* Marks the end of buffer array */
+#define __MAX_FUNC_LEN__ 15
 
 /**
  * enumerations of the defferent types
@@ -36,14 +37,13 @@ typedef enum {
     _sqrt,
     _cbrt,
     _log,
+    _loge,
     _exp,
-    _abs,
     _roundup,
     _rounddwn,
     _min,
     _max,
     _sum,
-    _mean,
     _var,
     _avrg,
     _median,
@@ -72,101 +72,107 @@ static void storeinbuffer(int token, int flag, int *index)
 
 static int checkfunction(int *ch, int *index)
 {
-    char str[8];
+    char str[__MAX_FUNC_LEN__];
     int i = 0;
 
     str[i++] = *ch;
 
-    while((*ch = getchar()) != '(' && !isspace(*ch))
+    while((*ch = getchar()) != '(' && !isspace(*ch)) {
+        if(i >= (__MAX_FUNC_LEN__ ))
+            return NOT_FOUND;
+
         str[i++] = *ch;
+    }
 
     if(isspace(*ch))
         return false;
     
     str[i] = '\0';
 
-    if(strncmp(str, "abs", 3) == 0) {
-        storeinbuffer(_abs, function, index);
-        return FOUND;
-    }
-    else if(strncmp(str, "floor", 5) == 0) {
+    if(strncmp(str, "floor", 5) == 0) {
         storeinbuffer(_rounddwn, function, index);
         return FOUND;
     }
-    else if(strncmp(str, "ceil", 4) == 0) {
+    if(strncmp(str, "ceil", 4) == 0) {
         storeinbuffer(_roundup, function, index);
         return FOUND;
     }
-    else if(strncmp(str, "sin", 3) == 0) {
+    if(strncmp(str, "sin", 3) == 0) {
         storeinbuffer(_sin, function, index);
         return FOUND;
     }
-    else if(strncmp(str, "cos", 3) == 0) {
+    if(strncmp(str, "cos", 3) == 0) {
         storeinbuffer(_cos, function, index);
         return FOUND;
     }
-    else if(strncmp(str, "tan", 3) == 0) {
+    if(strncmp(str, "tan", 3) == 0) {
         storeinbuffer(_tan, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "asin", 6) == 0) {
+    if(strncmp(str, "asin", 6) == 0) {
         storeinbuffer(_asin, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "acos", 6) == 0) {
+    if(strncmp(str, "acos", 6) == 0) {
         storeinbuffer(_acos, function, index);
         return FOUND;
     }    
-    else if(strncmp(str, "atan", 6) == 0) {
+    if(strncmp(str, "atan", 6) == 0) {
         storeinbuffer(_atan, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "sqrt", 4) == 0) {
+    if(strncmp(str, "sqrt", 4) == 0) {
         storeinbuffer(_sqrt, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "cbrt", 4) == 0) {
+    if(strncmp(str, "cbrt", 4) == 0) {
         storeinbuffer(_cbrt, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "log", 3) == 0) {
+    if(strncmp(str, "log", 3) == 0) {
         storeinbuffer(_log, function, index);
         return FOUND;
+    }  
+    if(strncmp(str, "loge", 4) == 0) {
+        storeinbuffer(_loge, function, index);
+        return FOUND;
     }   
-    else if(strncmp(str, "min", 3) == 0) {
+    if(strncmp(str, "min", 3) == 0) {
         storeinbuffer(_min, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "max", 3) == 0) {
+    if(strncmp(str, "max", 3) == 0) {
         storeinbuffer(_max, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "sum", 3) == 0) {
-        storeinbuffer(_sum, function, index);
-        return FOUND;
-    }   
-    else if(strncmp(str, "avrg", 3) == 0) {
+    if(strncmp(str, "avrg", 3) == 0) {
         storeinbuffer(_avrg, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "mean", 4) == 0) {
-        storeinbuffer(_mean, function, index);
-        return FOUND;
-    }   
-    else if(strncmp(str, "median", 6) == 0) {
+    if(strncmp(str, "median", 6) == 0) {
         storeinbuffer(_median, function, index);
         return FOUND;
     }   
-    else if(strncmp(str, "var", 3) == 0) {
+    if(strncmp(str, "var", 3) == 0) {
         storeinbuffer(_var, function, index);
         return FOUND;
     }
-    else if(strncmp(str, "exp", 3) == 0) {
+    if(strncmp(str, "exp", 3) == 0) {
         storeinbuffer(_exp, function, index);
         return FOUND;
-    }   
-    else
-        return NOT_FOUND;
+    }
+
+    if(strncmp(str, "roundup", 8) == 0) {
+        storeinbuffer(_roundup, function, index);
+        return FOUND;
+    }
+    if(strncmp(str, "rounddwn", 8) == 0) {
+        storeinbuffer(_rounddwn, function, index);
+        return FOUND;
+    } 
+    _abs,
+    fprintf(stderr, "Error: Function '%s' not found.\n", str);
+    return NOT_FOUND;
 }
 
 int getexpr(FILE *stream)
@@ -207,6 +213,10 @@ int getexpr(FILE *stream)
         else if(type_to_be_read == OPERATOR) {
             while(isspace(read = getchar()) || read == '\t')
                 ;
+            if(read == ',') {
+                type_to_be_read = ANYTHING_ELSE;
+                continue;
+            }
             if(read == ')')
                 storeinbuffer(read, rbrace, &i);
             else {
@@ -324,40 +334,45 @@ void postfixConvert(void)
 }
 
 void evaluatefuctions(struct buffer b) {
+    struct buffer temp1;
+    struct buffer temp2;
     struct buffer tempans;
-    double radians;
+    double radian;
 
     switch(b.token) {
         case _sin:
-            radians = (stackpop(postfixStack).digitToken) * PI / 180.0;
-            tempans.digitToken = sin(radians);
-            pri(postfixStack);
+            radian = (stackpop(postfixStack).digitToken) * PI / 180.0;
+            tempans.digitToken = sin(radian);
             stackpush(postfixStack, tempans);
-            pri(postfixStack);
             break;
         
         case _cos:
-            tempans.digitToken = cos(stackpop(postfixStack).digitToken);
+            radian = (stackpop(postfixStack).digitToken) * PI / 180.0;
+            tempans.digitToken = cos(radian);
             stackpush(postfixStack, tempans);
             break;
         
         case _tan:
-            tempans.digitToken = tan(stackpop(postfixStack).digitToken);
+            radian = (stackpop(postfixStack).digitToken) * PI / 180.0;
+            tempans.digitToken = tan(radian);
             stackpush(postfixStack, tempans);
             break;
 
         case _asin:
-            tempans.digitToken = asin(stackpop(postfixStack).digitToken);
+            radian = (stackpop(postfixStack).digitToken) * PI / 180.0;
+            tempans.digitToken = asin(radian);
             stackpush(postfixStack, tempans);
             break;
         
         case _acos:
-            tempans.digitToken = acos(stackpop(postfixStack).digitToken);
+            radian = (stackpop(postfixStack).digitToken) * PI / 180.0;
+            tempans.digitToken = acos(radian);
             stackpush(postfixStack, tempans);
             break;
         
         case _atan:
-            tempans.digitToken = atan(stackpop(postfixStack).digitToken);
+            radian = (stackpop(postfixStack).digitToken) * PI / 180.0;
+            tempans.digitToken = atan(radian);
             stackpush(postfixStack, tempans);
             break;
         
@@ -376,13 +391,13 @@ void evaluatefuctions(struct buffer b) {
             stackpush(postfixStack, tempans);
             break;
         
-        case _exp:
-            tempans.digitToken = exp(stackpop(postfixStack).digitToken);
+        case _loge:
+            tempans.digitToken = log(stackpop(postfixStack).digitToken);
             stackpush(postfixStack, tempans);
             break;
         
-        case _abs:
-            tempans.digitToken = (double) abs( (int) stackpop(postfixStack).digitToken);
+        case _exp:
+            tempans.digitToken = exp(stackpop(postfixStack).digitToken);
             stackpush(postfixStack, tempans);
             break;
         
@@ -395,7 +410,29 @@ void evaluatefuctions(struct buffer b) {
             tempans.digitToken = floor(stackpop(postfixStack).digitToken);
             stackpush(postfixStack, tempans);
             break;
+        
+        case _min:
+            temp1.digitToken = stackpop(postfixStack).digitToken;
+            temp2.digitToken = stackpop(postfixStack).digitToken;
 
+            tempans.digitToken = temp1.digitToken < temp2.digitToken ? temp1.digitToken : temp2.digitToken;
+            stackpush(postfixStack, tempans);
+            break;
+
+        case _max:
+            temp1.digitToken = stackpop(postfixStack).digitToken;
+            temp2.digitToken = stackpop(postfixStack).digitToken;
+
+            tempans.digitToken = temp1.digitToken > temp2.digitToken ? temp1.digitToken : temp2.digitToken;
+            stackpush(postfixStack, tempans);
+            break;
+
+        case _avrg:
+            temp1.digitToken = stackpop(postfixStack).digitToken;
+            temp2.digitToken = stackpop(postfixStack).digitToken;
+            tempans.digitToken = (temp1.digitToken + temp2.digitToken) / 2;
+            stackpush(postfixStack, tempans);
+            break;
     }
 }
 
@@ -463,7 +500,6 @@ double evaluate(void)
             
             default:
                 stackpush(postfixStack, p);
-                pri(postfixStack);
                 break;
         }
     }
@@ -487,11 +523,7 @@ int main(void)
     
     postfixConvert();
 
-    pri(postfixStack);
     ans = evaluate();
-
-    pri(postfixStack);
-
 
     printf("Answer = %lf\n", ans);
     
