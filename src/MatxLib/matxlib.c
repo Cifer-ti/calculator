@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_TOKEN_LEN 512
-#define NOT_FOUND 404
+#define __MAX_TOKEN_LEN__ 512
 
 typedef enum {
     normal,
@@ -13,6 +12,77 @@ typedef enum {
     transpose,
     inverse,
 }operation;
+
+typedef enum {
+    NOT_FOUND = 404,
+    BAD_DIM = -3,
+    ERR = -1,
+    OK = 10,
+}error_check;
+
+error_check check_matxdim(char *str, int row, int col, char op)
+{
+     char *s = str;
+
+     int tcol, trow;
+
+    switch(op) {
+        case '+':
+        case '-':
+            while(*str != ';') {
+                if(*str == ',') 
+                    tcol++;
+                str++;
+            }
+            tcol += 1;
+
+            if(tcol != col) {
+                fprintf(stderr, "Error: Non matching columng\n");
+                return BAD_DIM;
+            }
+
+            while(*s != '\0') {
+                if(*s == ';')
+                    trow++;
+                s++;
+            }
+
+            if(trow != row) {
+                fprintf(stderr, "Error: Non matching column\n");
+                return BAD_DIM;
+            }
+        
+        case '*':
+             while(*s != '\0') {
+                if(*s == ';')
+                    trow++;
+                s++;
+            }
+
+            if(trow != col) {
+                fprintf(stderr, "Error: Mismatch for multimpication\n");
+                return BAD_DIM;
+            }
+        
+        default:
+            return ERR;
+    }
+
+    return OK;
+}
+
+
+void matxinit(int row, int col, int matx[row][col])
+{
+    int i, j;
+
+    if(check_matxdim)
+    for(i = 0; i < row; i++) {
+        for(j = 0; j < col; j++)
+            matx[i][j] = 0;
+    }
+
+}
 
 void addmatx(int row, int col, int matx[row][col], int res[row][col])
 {
@@ -75,22 +145,20 @@ char *parseMatrix(char* str, int col, int row, int matrix[row][col])
     return s + 1;
 }
 
-void matxdimension(char *str, int *row, int *col)
+void find_matxdim(char *str, int *row, int *col)
 {
     char *s = str;
-    bool colknown = false;
 
     *row = 0;
     *col = 0;
 
-    if(!colknown) {
-        while(*str != ';') {
-            if(*str != ',' && *str != ' ') 
-                *col += 1;
-            str++;
-        }
-        colknown = true;
+    while(*str != ';') {
+        if(*str == ',') 
+            *col += 1;
+        str++;
     }
+
+    *col += 1;
 
     while(*s != '\0') {
         if(*s == ';')
@@ -99,6 +167,7 @@ void matxdimension(char *str, int *row, int *col)
     }
 
 }
+
 
 operation checkoperation(char *in)
 {
@@ -134,12 +203,12 @@ operation checkoperation(char *in)
 
 int main(void)
 {   
-    char input[MAX_TOKEN_LEN];
-    char operator[MAX_TOKEN_LEN / 2];
+    char input[__MAX_TOKEN_LEN__];
+    char operator[__MAX_TOKEN_LEN__ / 2];
     char *p = '\0';
     int i = 0, j = 0;
     int col, row, ind = 0;
-    operation r;
+    operation op;
 
     //printf("Enter matrix dimensions(mxn): ");
     //scanf("%dx%d", &row, &col);
@@ -148,29 +217,22 @@ int main(void)
     printf("Enter matrix expression: ");
     fgets(input, sizeof(input), stdin);
 
-    matxdimension(input, &row, &col);
+    find_matxdim(input, &row, &col);
     printf("rowxcol: %dx%d", row, col);
 
-    return 0;
-
     int matx[row][col];
-    int rest[row][col];
+    int result[row][col];
 
-    for(i = 0; i < row; i++) {
-        for(int j = 0; j < col; j++)
-            rest[i][j] = 0;
-    }
-    i = 0;
+    matxinit(row, col, result);
 
-
-    r = checkoperation(input);
+    op = checkoperation(input);
 
     /**
      *  since operators seperate differnt matrixes
      * replace it with '\0' so they can be as seperate strigs
-    */
+     */
 
-   switch(r) {
+   switch(op) {
         case normal:
             p = strpbrk(input, "+-*=");
             operator[i++] = *p;
@@ -186,30 +248,33 @@ int main(void)
             }
             operator[i] = '\0';
 
-
             p = parseMatrix(input, col, row, matx);
-            addmatx(row, col, matx, rest);
-
+            addmatx(row, col, matx, result);
 
             while(*p != '\n') {
                 if(p + 1 != NULL) {
-                    p = parseMatrix(p, col, row, matx);
-                    eval(row, col, matx, rest, operator[ind++]);
+                    if(check_matxdim(p, row, col, operator[ind]) == OK) {
+                        p = parseMatrix(p, col, row, matx);
+                        eval(row, col, matx, result, operator[ind++]);
+                    }
                 }
             }
             break;
         
         case determinant:
-            p = parseMatrix(p, col, row, matx);
-            /* call determinant function */
+            p = input;
+            if(check_matxdim(p, row, col, operator[ind]) == OK) {
+                p = parseMatrix(p, col, row, matx);
+                /* call determinant function */
+            }
             break;
         case transpose:
-            p = parseMatrix(p, col, row, matx);
-            /* call transpose function */
+            p = input;
+            if(check_matxdim(p, row, col, operator[ind]) == OK) {
+                p = parseMatrix(p, col, row, matx);
+                /* call transpose function */
+            }
             break;
-        
-
-
 
    }
     
