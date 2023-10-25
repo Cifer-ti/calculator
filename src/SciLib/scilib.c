@@ -16,7 +16,6 @@
 
 /**
  * enumerations of the defferent types
- * 
 */
 typedef enum {
     operator,
@@ -170,8 +169,9 @@ static int checkfunction(int *ch, int *index)
         storeinbuffer(_rounddwn, function, index);
         return FOUND;
     } 
-    _abs,
+
     fprintf(stderr, "Error: Function '%s' not found.\n", str);
+    
     return NOT_FOUND;
 }
 
@@ -228,6 +228,7 @@ int getexpr(FILE *stream)
 
     tokenbuffer[--i].token = _END;
     tokenbuffer[i].type_flag = end;
+
     return i;
 }
 
@@ -504,7 +505,7 @@ double evaluate(void)
         }
     }
 
-        return (stackpop(postfixStack).digitToken);
+    return (stackpop(postfixStack).digitToken);
     
 }
 

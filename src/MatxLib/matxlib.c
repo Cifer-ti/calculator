@@ -24,7 +24,7 @@ error_check check_matxdim(char *str, int row, int col, char op)
 {
      char *s = str;
 
-     int tcol, trow;
+     int tcol = 0, trow = 0;
 
     switch(op) {
         case '+':
@@ -34,10 +34,10 @@ error_check check_matxdim(char *str, int row, int col, char op)
                     tcol++;
                 str++;
             }
-            tcol += 1;
+            tcol++;
 
             if(tcol != col) {
-                fprintf(stderr, "Error: Non matching columng\n");
+                fprintf(stderr, "Error: Non matching column\n");
                 return BAD_DIM;
             }
 
@@ -51,6 +51,8 @@ error_check check_matxdim(char *str, int row, int col, char op)
                 fprintf(stderr, "Error: Non matching column\n");
                 return BAD_DIM;
             }
+
+            break;
         
         case '*':
              while(*s != '\0') {
@@ -205,7 +207,7 @@ int main(void)
 {   
     char input[__MAX_TOKEN_LEN__];
     char operator[__MAX_TOKEN_LEN__ / 2];
-    char *p = '\0';
+    char *p = '\0', *st = '\0';
     int i = 0, j = 0;
     int col, row, ind = 0;
     operation op;
@@ -217,15 +219,28 @@ int main(void)
     printf("Enter matrix expression: ");
     fgets(input, sizeof(input), stdin);
 
+    op = checkoperation(input);
+
+    st = input;
+
+    if((p = strpbrk(input, "+-*=")) != NULL) {
+            operator[i++] = *p;
+            *p = '\0';
+    }   
+
     find_matxdim(input, &row, &col);
-    printf("rowxcol: %dx%d", row, col);
+    //printf("rowxcol: %dx%d", row, col);
+
+   // return 0;
 
     int matx[row][col];
     int result[row][col];
 
     matxinit(row, col, result);
 
-    op = checkoperation(input);
+    //printf("%d\n", op);
+
+    //return 0;
 
     /**
      *  since operators seperate differnt matrixes
@@ -234,16 +249,13 @@ int main(void)
 
    switch(op) {
         case normal:
-            p = strpbrk(input, "+-*=");
-            operator[i++] = *p;
-            *p = '\0';
 
             while(1) {
-                p = strpbrk(p + 1, "+-=*"); 
+                p = strpbrk(p + 1, "+-*="); 
                 if( p == NULL)
                     break;
-  
-                operator[i++] = *p;
+                if(*p != '=')
+                    operator[i++] = *p;
                 *p = '\0';
             }
             operator[i] = '\0';
@@ -253,10 +265,10 @@ int main(void)
 
             while(*p != '\n') {
                 if(p + 1 != NULL) {
-                    if(check_matxdim(p, row, col, operator[ind]) == OK) {
-                        p = parseMatrix(p, col, row, matx);
-                        eval(row, col, matx, result, operator[ind++]);
-                    }
+                    if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) 
+                        break;
+                    p = parseMatrix(p, col, row, matx);
+                    eval(row, col, matx, result, operator[ind++]);
                 }
             }
             break;
@@ -268,6 +280,7 @@ int main(void)
                 /* call determinant function */
             }
             break;
+
         case transpose:
             p = input;
             if(check_matxdim(p, row, col, operator[ind]) == OK) {
@@ -276,7 +289,7 @@ int main(void)
             }
             break;
 
-   }
+   }   
     
     return 1;
 } 

@@ -36,7 +36,8 @@ Computes trigonometric functions, and other functions listed below.
 * `atan(...)` Arctangent.
 * `sqrt(...)` Square root.
 * `cbrt(...)` Cube root.
-* `log(...)` Logarithm.
+* `log(...)` Logarithm to the base 10.
+* `loge(...)` Logarithm to the base e.
 * `exp(...)` Exponentiation (e^x).
 * `abs(...)` Absolute value.
 * `roundup(...)` Round up.
