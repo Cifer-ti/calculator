@@ -20,6 +20,20 @@ typedef enum {
     OK = 10,
 }error_check;
 
+/**
+ * check_matxdim: Checks the matrix dimension, with respect
+ *                to a refrence matrix if it is compatible for 
+ *                a particular operation.
+ * 
+ * *str- The string holding the matrix.
+ * row- The row of the refrence matrix.
+ * col- The col of the refrence matrix.
+ * op- The operation to be performed whith the matrix.
+ * 
+ * Return: returns BAD_DIM if the dimension isn't appropriate
+ *          for operation, ERR if the operation isn't valid or
+ *          OK if it all goes well.
+*/
 error_check check_matxdim(char *str, int row, int col, char op)
 {
      char *s = str;
@@ -74,6 +88,14 @@ error_check check_matxdim(char *str, int row, int col, char op)
 }
 
 
+/**
+ * mnatxinit: Initializes al elements of amatrix 
+ *            to zero.
+ * 
+ * matx- The matrix.
+ * row- The number of rows of the matrix
+ * col- The number of columns of the matrix.
+*/
 void matxinit(int row, int col, int matx[row][col])
 {
     int i, j;
@@ -86,6 +108,16 @@ void matxinit(int row, int col, int matx[row][col])
 
 }
 
+/**
+ * addmatx: Adds up two matrixes and stores the result
+ *          in one of them.
+ * 
+ * matx- the first matrix
+ * res- The other matrix, which will also hold the result of 
+ *      computation.
+ * row- The row of the matrices.
+ * col- The column of the matrices.
+*/
 void addmatx(int row, int col, int matx[row][col], int res[row][col])
 {
     int i, j;
@@ -96,6 +128,16 @@ void addmatx(int row, int col, int matx[row][col], int res[row][col])
     }    
 }
 
+/**
+ * addmatx: Subtracts two matrixes and stores the result
+ *          in one of them.
+ * 
+ * matx- the first matrix
+ * res- The other matrix, which will also hold the result of 
+ *      computation.
+ * row- The row of the matrices.
+ * col- The column of the matrices.
+*/
 void submatx(int row, int col, int matx[row][col], int res[row][col])
 {
     int i, j;
@@ -106,6 +148,15 @@ void submatx(int row, int col, int matx[row][col], int res[row][col])
     }    
 }
 
+/**
+ * eval: Checks the operation to be performed, and calls the 
+ *       appropriate function to do it.
+ * 
+ * matx- The first matrix.
+ * res- The other matrix, which will also store the result.
+ * row- The row of the matrices.
+ * col- The col of the matrices.
+*/
 void eval(int row, int col, int matx[row][col], int res[row][col], char op)
 {
     switch(op) {
@@ -123,7 +174,17 @@ void eval(int row, int col, int matx[row][col], int res[row][col], char op)
     }
 }
 
-
+/**
+ * parseMatrix: Extracts the matrix from a string, and 
+ *              converts it into integer storing it into the matrix.
+ * 
+ * str- String containing the matrix.
+ * col- The column of the matrix.
+ * row- The row of the matrix.
+ * matrix- The matrix that would hold the converted matrix.
+ * 
+ * Return: returns a pointer to the next string in the input string.
+*/
 char *parseMatrix(char* str, int col, int row, int matrix[row][col])
 {
     char *s = str;
@@ -147,6 +208,14 @@ char *parseMatrix(char* str, int col, int row, int matrix[row][col])
     return s + 1;
 }
 
+/**
+ * find_matxdim: Finds the dimension of a matrix, and stores
+ *              the value into it's other two arguements.
+ * 
+ * str- The string containing the matrix.
+ * row- will contain the row of the matrix.
+ * col- Will contain the column of the matrix.
+*/
 void find_matxdim(char *str, int *row, int *col)
 {
     char *s = str;
@@ -170,7 +239,13 @@ void find_matxdim(char *str, int *row, int *col)
 
 }
 
-
+/**
+ * checkoperation: Determines the operation to be 
+ *                 performed on a matrix, by reading it form the
+ *                 input string.
+ * 
+ * *in: Pointer to the input string.
+*/
 operation checkoperation(char *in)
 {
     char str[5];
@@ -290,6 +365,5 @@ int main(void)
             break;
 
    }   
-    
     return 1;
 } 
