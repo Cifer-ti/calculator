@@ -82,4 +82,4 @@ Supports basic oprations on complex numbers such as
 - Ensure that you have a C compiler installed on your system (e.g., GCC).
 
 ## Extra Information
-For extra informations on usage, check the man page.
+For extra informations on usage, check the main page.
