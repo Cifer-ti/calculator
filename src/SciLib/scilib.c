@@ -62,6 +62,15 @@ Stack postfixStack;
 
 int postind = 0;
 
+/**
+ * streinbuffer: Stores the different tokens into the 
+ *                storage made to hold the tokens (tokenbuffer), 
+ *                and sets the tokens type flag.
+ * 
+ * token- The token to be stored into the tokenbuffer.
+ * flag- the type flag of the token.
+ * index- the index of the token in the tokenbuffer array.
+*/
 static void storeinbuffer(int token, int flag, int *index)
 {
     tokenbuffer[*index].token = token;
@@ -69,6 +78,19 @@ static void storeinbuffer(int token, int flag, int *index)
     *index += 1;
 }
 
+/**
+ * checkfunction: when passed a pointer, to the first letter of
+ *                a function, reads the function name to the end,
+ *                 stores it into a string which is used to determine the 
+ *                  name of the function and if found, stores it into the tokenbuffer
+ *                  array.
+ * 
+ * *ch- A pointer to the first letter of the function name.
+ * *index- The index position of the array to hold function info.
+ * 
+ * Return: returns FOUND if the function name was valid, else 
+ *          returns NOT_FOUND.
+*/
 static int checkfunction(int *ch, int *index)
 {
     char str[__MAX_FUNC_LEN__];
@@ -233,7 +255,14 @@ int getexpr(FILE *stream)
 }
 
 
-
+/**
+ * icp: InComing Precedence. determines the precedence 
+ *       of an incoming operator.
+ * 
+ * optn- The operator whose ICP is to be determined.
+ * 
+ * Return: returns the ICP of the operator.
+*/
 static int icp(int optn)
 {
     switch(optn) {
@@ -262,6 +291,14 @@ static int icp(int optn)
     }
 }
 
+/**
+ * icp: In Stack Precedence. determines the instack
+ *      precedence of an operator.
+ * 
+ * optn- The operator whose ISP is to be determined.
+ * 
+ * Return: returns the ISP of the operator.
+*/
 static int isp(int optr)
 {
     switch(optr) {
@@ -291,6 +328,11 @@ static int isp(int optr)
 }
 
 
+/**
+ * postfixConvert: Converts the tokens in the tokenbuffer array,
+ *                  which are in infix notation, to thier appropriate postfix
+ *                  notation, and stores it into postfix buffer array.
+*/
 void postfixConvert(void)
 {
     int i = 0, j = 0;
@@ -334,13 +376,19 @@ void postfixConvert(void)
     postfixbuffer[j].type_flag = end;
 }
 
-void evaluatefuctions(struct buffer b) {
+/**
+ * evaluatefunctions: Evaluates a function and pushes the
+ *                    result back into the stack.
+ * 
+ * s- The structure containing function info.
+*/
+void evaluatefuctions(struct buffer s) {
     struct buffer temp1;
     struct buffer temp2;
     struct buffer tempans;
     double radian;
 
-    switch(b.token) {
+    switch(s.token) {
         case _sin:
             radian = (stackpop(postfixStack).digitToken) * PI / 180.0;
             tempans.digitToken = sin(radian);
@@ -437,6 +485,13 @@ void evaluatefuctions(struct buffer b) {
     }
 }
 
+
+/**
+ * evaluate: The general evaluation function which evaluates 
+ *           the postfix expresion in postfixbuffer.
+ * 
+ * Return: returns the final answer.
+*/
 double evaluate(void)
 {
     struct buffer temp;
