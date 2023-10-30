@@ -2,7 +2,7 @@
 #define STACK_H
 
 #include <stdbool.h>
-#include "../SciLib/scilib.h"
+#include "../scilib/scilib.h"
 
 typedef struct stack *Stack;
 

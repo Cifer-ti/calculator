@@ -40,12 +40,11 @@ typedef enum {
     _exp,
     _roundup,
     _rounddwn,
+    _abs,
     _min,
     _max,
     _sum,
-    _var,
     _avrg,
-    _median,
 }functios_id;
 
 /**
@@ -170,25 +169,20 @@ static int checkfunction(int *ch, int *index)
         storeinbuffer(_avrg, function, index);
         return FOUND;
     }   
-    if(strncmp(str, "median", 6) == 0) {
-        storeinbuffer(_median, function, index);
-        return FOUND;
-    }   
-    if(strncmp(str, "var", 3) == 0) {
-        storeinbuffer(_var, function, index);
-        return FOUND;
-    }
     if(strncmp(str, "exp", 3) == 0) {
         storeinbuffer(_exp, function, index);
         return FOUND;
     }
-
     if(strncmp(str, "roundup", 8) == 0) {
         storeinbuffer(_roundup, function, index);
         return FOUND;
     }
     if(strncmp(str, "rounddwn", 8) == 0) {
         storeinbuffer(_rounddwn, function, index);
+        return FOUND;
+    } 
+    if(strncmp(str, "abs", 3) == 0) {
+        storeinbuffer(_abs, function, index);
         return FOUND;
     } 
 
@@ -480,6 +474,11 @@ void evaluatefuctions(struct buffer s) {
             temp1.digitToken = stackpop(postfixStack).digitToken;
             temp2.digitToken = stackpop(postfixStack).digitToken;
             tempans.digitToken = (temp1.digitToken + temp2.digitToken) / 2;
+            stackpush(postfixStack, tempans);
+            break;
+
+        case _abs:
+            tempans.digitToken = abs(stackpop(postfixStack).digitToken);
             stackpush(postfixStack, tempans);
             break;
     }

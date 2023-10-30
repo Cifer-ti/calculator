@@ -45,8 +45,6 @@ Computes trigonometric functions, and other functions listed below.
 * `min(...)` Minimum.
 * `max(...)` Maximum.
 * `sum(...)` Summation.
-* `mean(...)` Mean.
-* `var(...)` Variance.
 * `avrg(...)` Mean.
 * `median(...)` Median.
 

@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../SciLib/scilib.h"
+#include "../scilib/scilib.h"
 #include "stack.h"
 
 struct stack {
