@@ -245,7 +245,7 @@ int getexpr(FILE *stream)
     tokenbuffer[--i].token = _END;
     tokenbuffer[i].type_flag = end;
 
-    return i;
+    return OK;
 }
 
 

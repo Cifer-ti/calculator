@@ -202,6 +202,7 @@ void eval(int row, int col, int matx[row][col], int res[row][col], char op)
 char *parseMatrix(char* str, int col, int row, int matrix[row][col])
 {
     char *s = str;
+       
     while(*s != '\0')
         s++;
 

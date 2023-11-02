@@ -5,6 +5,7 @@
 #define NOT_FOUND 404
 #define FOUND 1
 #define READ_ERR -99
+#define OK 100
 
 struct buffer {
     int token;
