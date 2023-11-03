@@ -186,7 +186,7 @@ static int checkfunction(int *ch, int *index)
         return FOUND;
     } 
 
-    fprintf(stderr, "Error: Function '%s' not found.\n", str);
+    fprintf(stderr, "Error: Function '%s' not recognised.\n", str);
     
     return NOT_FOUND;
 }
@@ -197,9 +197,9 @@ int getexpr(FILE *stream)
     int type_to_be_read = ANYTHING_ELSE;
     int read, i = 0;
     double digit_read;
-
     while(read != EOF && read != '=') {
         if(type_to_be_read == ANYTHING_ELSE) {
+            
             if(scanf("%lf ", &digit_read) == 1) {
                tokenbuffer[i].digitToken = digit_read;
                tokenbuffer[i++].type_flag = operand;
