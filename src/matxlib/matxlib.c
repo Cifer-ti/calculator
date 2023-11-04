@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define __MAX_TOKEN_LEN__ 512
+#define STR_END 6
 
 typedef enum {
     normal,
@@ -147,7 +148,7 @@ void submatx(int row, int col, int matx[row][col], int res[row][col])
             res[i][j] -= matx[i][j];
     }    
 }
-
+/*
 void multmatx(int row, int col, int matx[row][col], int res[row][col])
 {
     int i, j, k;
@@ -161,6 +162,7 @@ void multmatx(int row, int col, int matx[row][col], int res[row][col])
         }
     }
 }
+*/
 
 /**
  * eval: Checks the operation to be performed, and calls the 
@@ -231,27 +233,68 @@ char *parseMatrix(char* str, int col, int row, int matrix[row][col])
  * row- will contain the row of the matrix.
  * col- Will contain the column of the matrix.
 */
-void find_matxdim(char *str, int *row, int *col)
+int check_matxcol(char *s, const int *column) 
 {
-    char *s = str;
+    int test_col = 0;
 
-    *row = 0;
-    *col = 0;
-
-    while(*str != ';') {
-        if(*str == ',') 
-            *col += 1;
-        str++;
+    if(*s == '\0' || *s == '\n')
+        return STR_END;
+    
+    while(*s != ';') {
+        if(*s == ',')
+            test_col++;
+        s++;
     }
+    test_col++;
 
-    *col += 1;
+    printf("%d\n", *column);
+    if(test_col != *column)
+        return BAD_DIM;
+
+    return check_matxcol(s + 1, column);
+}
+
+int check_matxrow(char *s, const int *row) 
+{
+    int test_row = 0;;
 
     while(*s != '\0') {
         if(*s == ';')
-            *row += 1;
+            test_row += 1;
         s++;
     }
 
+    if(*row != test_row)
+        return BAD_DIM;
+    
+    return 1;
+}
+
+int find_matxdim(char *s, int *col, int *row)
+{
+    char *t = s; 
+    int ret = 0;
+
+    while(*s != ';') {
+        if(*s == ',')
+            *col += 1;
+        s++;  
+    }
+    *col += 1;
+
+    ret = check_matxcol(s + 1, col);
+
+    if(ret == BAD_DIM) {
+        return -1;
+    }
+
+    while(*t != '\0') {
+        if(*t == ';')
+            *row += 1;
+        t++;
+    }
+
+    return OK;
 }
 
 /**
@@ -270,7 +313,6 @@ operation checkoperation(char *in)
         return determinant;
     
     if(isalpha(*in)) {
-        str[i++] = *in++;
         while(*in != '(' && *in != '\n') {
             str[i++] = *in++;
         }
@@ -278,9 +320,6 @@ operation checkoperation(char *in)
     }
     else
         return normal;
-
-    printf("op: %s\n", str);
-    exit(EXIT_SUCCESS);
 
     if(strncmp(str, "trps", 4) == 0)
         return transpose;
@@ -302,10 +341,6 @@ int main(void)
     int col, row, ind = 0;
     operation op;
 
-    //printf("Enter matrix dimensions(mxn): ");
-    //scanf("%dx%d", &row, &col);
-    //getchar();
-
     printf("Enter matrix expression: ");
     fgets(input, sizeof(input), stdin);
 
@@ -318,10 +353,9 @@ int main(void)
             *p = '\0';
     }   
 
+    row = col = 0;
     find_matxdim(input, &row, &col);
-    //printf("rowxcol: %dx%d", row, col);
-
-   // return 0;
+    printf("rowxcol: %dx%d", row, col);
 
     int matx[row][col];
     int result[row][col];
