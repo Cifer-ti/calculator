@@ -21,6 +21,83 @@ typedef enum {
     OK = 10,
 }error_check;
 
+int syntaxerror(char *erro_message)
+{
+    fprintf(stderr," *** syntax error ***\n");
+    fprintf(stderr, "%s\n", erro_message);
+
+    return ERR;
+}
+
+int check_matxcol(char *s, const int *column) 
+{
+    int test_col = 0;
+
+    while(*s == ' ')
+        s++;
+
+    if(*s == '\0' || *s == '\n')
+        return OK;
+    
+    while(*s != ';') {
+        if(*s == ',')
+            test_col++;
+        s++;
+    }
+    test_col++;
+
+    
+    if(test_col != *column)
+        return BAD_DIM;
+
+    return check_matxcol(s + 1, column);
+}
+
+int check_matxrow(char *s, const int *row) 
+{
+    int test_row = 0;;
+
+    while(*s != '\0') {
+        if(*s == ';')
+            test_row += 1;
+        s++;
+    }
+
+    if(*row != test_row)
+        return BAD_DIM;
+    
+    return OK;
+}
+
+int find_matxdim(char *s, int *col, int *row)
+{
+    char *t = s; 
+    int ret = 0;
+
+    while(*s == ' ')
+        s++;
+
+    while(*s != ';') {
+        if(*s == ',')
+            *col += 1;
+        s++;  
+    }
+    *col += 1;
+
+    ret = check_matxcol(s + 1, col);
+
+    if(ret == BAD_DIM) 
+        return ret;
+
+    while(*t != '\0') {
+        if(*t == ';')
+            *row += 1;
+        t++;
+    }
+
+    return OK;
+}
+
 /**
  * check_matxdim: Checks the matrix dimension, with respect
  *                to a refrence matrix if it is compatible for 
@@ -44,45 +121,20 @@ error_check check_matxdim(char *str, int row, int col, char op)
     switch(op) {
         case '+':
         case '-':
-            while(*str != ';') {
-                if(*str == ',') 
-                    tcol++;
-                str++;
-            }
-            tcol++;
-
-            if(tcol != col) {
-                fprintf(stderr, "Error: Non matching column\n");
+            if(check_matxcol(str, &col) != OK && check_matxrow(str, &row) != OK)
                 return BAD_DIM;
-            }
-
-            while(*s != '\0') {
-                if(*s == ';')
-                    trow++;
-                s++;
-            }
-
-            if(trow != row) {
-                fprintf(stderr, "Error: Non matching column\n");
-                return BAD_DIM;
-            }
 
             break;
         
         case '*':
-             while(*s != '\0') {
-                if(*s == ';')
-                    trow++;
-                s++;
-            }
-
-            if(trow != col) {
-                fprintf(stderr, "Error: Mismatch for multimpication\n");
+            if(check_matxcol(str, &row) != OK || check_matxrow(str, &col) != OK)
                 return BAD_DIM;
-            }
-        
+
+            break;
+
         default:
             return ERR;
+            break;
     }
 
     return OK;
@@ -130,7 +182,7 @@ void addmatx(int row, int col, int matx[row][col], int res[row][col])
 }
 
 /**
- * addmatx: Subtracts two matrixes and stores the result
+ * submatx: Subtracts two matrixes and stores the result
  *          in one of them.
  * 
  * matx- the first matrix
@@ -233,69 +285,6 @@ char *parseMatrix(char* str, int col, int row, int matrix[row][col])
  * row- will contain the row of the matrix.
  * col- Will contain the column of the matrix.
 */
-int check_matxcol(char *s, const int *column) 
-{
-    int test_col = 0;
-
-    if(*s == '\0' || *s == '\n')
-        return STR_END;
-    
-    while(*s != ';') {
-        if(*s == ',')
-            test_col++;
-        s++;
-    }
-    test_col++;
-
-    printf("%d\n", *column);
-    if(test_col != *column)
-        return BAD_DIM;
-
-    return check_matxcol(s + 1, column);
-}
-
-int check_matxrow(char *s, const int *row) 
-{
-    int test_row = 0;;
-
-    while(*s != '\0') {
-        if(*s == ';')
-            test_row += 1;
-        s++;
-    }
-
-    if(*row != test_row)
-        return BAD_DIM;
-    
-    return 1;
-}
-
-int find_matxdim(char *s, int *col, int *row)
-{
-    char *t = s; 
-    int ret = 0;
-
-    while(*s != ';') {
-        if(*s == ',')
-            *col += 1;
-        s++;  
-    }
-    *col += 1;
-
-    ret = check_matxcol(s + 1, col);
-
-    if(ret == BAD_DIM) {
-        return -1;
-    }
-
-    while(*t != '\0') {
-        if(*t == ';')
-            *row += 1;
-        t++;
-    }
-
-    return OK;
-}
 
 /**
  * checkoperation: Determines the operation to be 
@@ -336,7 +325,9 @@ int main(void)
 {   
     char input[__MAX_TOKEN_LEN__];
     char operator[__MAX_TOKEN_LEN__ / 2];
+
     char *p = '\0', *st = '\0';
+
     int i = 0, j = 0;
     int col, row, ind = 0;
     operation op;
@@ -354,7 +345,11 @@ int main(void)
     }   
 
     row = col = 0;
-    find_matxdim(input, &row, &col);
+    if(find_matxdim(input, &col, &row) != OK) {
+        syntaxerror("Bad matrix dimension");
+        exit(EXIT_FAILURE);
+    }
+        
     printf("rowxcol: %dx%d", row, col);
 
     int matx[row][col];
@@ -362,9 +357,6 @@ int main(void)
 
     matxinit(row, col, result);
 
-    //printf("%d\n", op);
-
-    //return 0;
 
     /**
      *  since operators seperate differnt matrixes
@@ -384,13 +376,17 @@ int main(void)
             }
             operator[i] = '\0';
 
+           // printf("op: %s\n", operator);
+
             p = parseMatrix(input, col, row, matx);
             addmatx(row, col, matx, result);
 
             while(*p != '\n') {
                 if(p + 1 != NULL) {
-                    if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) 
+                    if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) {
+                        syntaxerror("Matrix not embedded correctly");
                         break;
+                    }
                     p = parseMatrix(p, col, row, matx);
                     eval(row, col, matx, result, operator[ind++]);
                 }
@@ -413,6 +409,14 @@ int main(void)
             }
             break;
 
-   }   
+   }  
+
+    printf("\n");
+    for(i = 0; i < row; i++) {
+        for(j = 0; j < col; j++)
+            printf("%d ", result[i][j]);
+        printf("\n");
+   } 
+
     return 1;
 } 
