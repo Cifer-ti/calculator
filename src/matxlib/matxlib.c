@@ -7,6 +7,9 @@
 #define __MAX_TOKEN_LEN__ 512
 #define STR_END 6
 
+int row1, col1;
+int **resultss;
+
 typedef enum {
     normal,
     determinant,
@@ -200,21 +203,26 @@ void submatx(int row, int col, int matx[row][col], int res[row][col])
             res[i][j] -= matx[i][j];
     }    
 }
-/*
-void multmatx(int row, int col, int matx[row][col], int res[row][col])
+
+void multmatx(int row1, int col1, int row2, int col2, int matx1[row1][col1], int matx2[row2][col2])
 {
     int i, j, k;
     
-    for (int i = 0; i < rows1; i++) {
-        for (int j = 0; j < cols2; j++) {
-            result[i][j] = 0;
-            for (int k = 0; k < cols1; k++) {
-                result[i][j] += mat1[i][k] * mat2[k][j];
+    resultss = malloc(row1 * sizeof(int *));
+    for(i = 0; i < row1; i++) {
+        resultss[i] = malloc(col2 * sizeof(int));
+    }
+
+    for (int i = 0; i < row1; i++) {
+        for (int j = 0; j < col2; j++) {
+            resultss[i][j] = 0;
+            for (int k = 0; k < col1; k++) {
+                resultss[i][j] += matx1[i][k] * matx2[k][j];
             }
         }
     }
+
 }
-*/
 
 /**
  * eval: Checks the operation to be performed, and calls the 
@@ -375,23 +383,49 @@ int main(void)
                 *p = '\0';
             }
             operator[i] = '\0';
-
-           // printf("op: %s\n", operator);
+            j = 0;
 
             p = parseMatrix(input, col, row, matx);
             addmatx(row, col, matx, result);
 
-            while(*p != '\n') {
-                if(p + 1 != NULL) {
-                    if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) {
-                        syntaxerror("Matrix not embedded correctly");
-                        break;
-                    }
+            switch(operator[j]) {
+                case '+':
+                case '-':
+                    while(*p != '\n') {
+                    if(p + 1 != NULL) {
+                        if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) {
+                            syntaxerror("Matrix not embedded correctly");
+                            break;
+                        }
                     p = parseMatrix(p, col, row, matx);
                     eval(row, col, matx, result, operator[ind++]);
+                    }
                 }
+                break;
+
+                case '*':
+                    col1 = row1 = 0;
+
+                    if(find_matxdim(p, &col1, &row1) != OK) {
+                        syntaxerror("Matrix not embedded correctly for multiplucation");
+                        break;
+                    }
+
+                    int mmatx[row1][col1];
+
+                    matxinit(row1, col1, mmatx);
+
+                    if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) {
+                        syntaxerror("Matrix not embedded properly");
+                        break;
+                    }
+
+                    p = parseMatrix(p, col1, row1, mmatx);
+                    multmatx(row, col, row1, col1, result, mmatx);
+
+
             }
-            break;
+
         
         case determinant:
             p = input;
@@ -412,9 +446,10 @@ int main(void)
    }  
 
     printf("\n");
+    printf("mul rowxcol: %dx%d\n", row, col1);
     for(i = 0; i < row; i++) {
-        for(j = 0; j < col; j++)
-            printf("%d ", result[i][j]);
+        for(j = 0; j < col1; j++)
+            printf("%d ", resultss[i][j]);
         printf("\n");
    } 
 
