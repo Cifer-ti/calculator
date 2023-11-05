@@ -213,15 +213,38 @@ void multmatx(int row1, int col1, int row2, int col2, int matx1[row1][col1], int
         resultss[i] = malloc(col2 * sizeof(int));
     }
 
-    for (int i = 0; i < row1; i++) {
-        for (int j = 0; j < col2; j++) {
+    for (i = 0; i < row1; i++) {
+        for (j = 0; j < col2; j++) {
             resultss[i][j] = 0;
-            for (int k = 0; k < col1; k++) {
+            for (k = 0; k < col1; k++) {
                 resultss[i][j] += matx1[i][k] * matx2[k][j];
             }
         }
     }
 
+}
+
+void matx_transpose(int row, int col, int matx[row][col])
+{
+    int i, j;
+
+    for(i = 0; i < row; i++) {
+        for(j = 0; j < col; j++)
+            printf("%d ", matx[i][j]);
+        printf("\n");
+   } 
+
+    resultss = malloc(col * sizeof(int *));
+    for(i = 0; i < col; i++) {
+        resultss[i] = malloc(row * sizeof(int));
+    }
+
+    for(i = 0; i < row; i++) {
+        for(j = 0; j < col; j++) {
+            resultss[j][i] = 0;
+            resultss[j][i] = matx[i][j];
+        }
+    }
 }
 
 /**
@@ -347,7 +370,7 @@ int main(void)
 
     st = input;
 
-    if((p = strpbrk(input, "+-*=")) != NULL) {
+    if((p = strpbrk(input, "+-*=)")) != NULL) {
             operator[i++] = *p;
             *p = '\0';
     }   
@@ -436,19 +459,21 @@ int main(void)
             break;
 
         case transpose:
+            printf("\ninput: %s\n", input);
             p = input;
-            if(check_matxdim(p, row, col, operator[ind]) == OK) {
-                p = parseMatrix(p, col, row, matx);
-                /* call transpose function */
-            }
+            while(*p != '(')
+                p++;
+            p = parseMatrix(++p, col, row, matx);
+            matx_transpose(row, col, matx);
+
             break;
 
    }  
 
     printf("\n");
-    printf("mul rowxcol: %dx%d\n", row, col1);
-    for(i = 0; i < row; i++) {
-        for(j = 0; j < col1; j++)
+    printf("mul rowxcol: %dx%d\n", row, col);
+    for(i = 0; i < col; i++) {
+        for(j = 0; j < row; j++)
             printf("%d ", resultss[i][j]);
         printf("\n");
    } 
