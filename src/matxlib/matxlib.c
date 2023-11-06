@@ -8,7 +8,8 @@
 #define STR_END 6
 
 int row1, col1;
-int **resultss;
+int **result = NULL;
+int **tempresult = NULL;
 
 typedef enum {
     normal,
@@ -23,6 +24,51 @@ typedef enum {
     ERR = -1,
     OK = 10,
 }error_check;
+
+int matxinit(int row, int col, int **matx)
+{
+    int i;
+
+    if(free(matx) != NULL) {
+        for(i = 0; i < row; i++) {
+            free(matx[i]);
+        }
+        free(matx);
+    }
+
+    if((matx = calloc(row * sizeof(int *))) != NULL) {
+        for(i = 0; i < row; i++) {
+            if((matx[i] = calloc(col * sizeof(int))) != NULL)
+                ;
+            else
+                return ERR;
+        }
+
+    }
+    else
+        return ERR;
+    
+    return OK;
+}
+
+int matxcopy(int srccol, int srcrow, int **src, int **dest)
+{
+    int i, j;
+
+    if(matxinit(srcrow, srccol, dest) == ERR)
+        return ERR;
+
+    if(srccol == NULL)
+        return ERR;
+    
+    for(i = 0; i < srcrow; i++) {
+        for(j = 0; j < srccol; j++) {
+            dest[i][j] = src[i][j];
+        }
+    }
+
+    return OK;
+}
 
 int syntaxerror(char *erro_message)
 {
@@ -145,26 +191,6 @@ error_check check_matxdim(char *str, int row, int col, char op)
 
 
 /**
- * mnatxinit: Initializes al elements of amatrix 
- *            to zero.
- * 
- * matx- The matrix.
- * row- The number of rows of the matrix
- * col- The number of columns of the matrix.
-*/
-void matxinit(int row, int col, int matx[row][col])
-{
-    int i, j;
-
-    if(check_matxdim)
-    for(i = 0; i < row; i++) {
-        for(j = 0; j < col; j++)
-            matx[i][j] = 0;
-    }
-
-}
-
-/**
  * addmatx: Adds up two matrixes and stores the result
  *          in one of them.
  * 
@@ -208,16 +234,16 @@ void multmatx(int row1, int col1, int row2, int col2, int matx1[row1][col1], int
 {
     int i, j, k;
     
-    resultss = malloc(row1 * sizeof(int *));
+    result = malloc(row1 * sizeof(int *));
     for(i = 0; i < row1; i++) {
-        resultss[i] = malloc(col2 * sizeof(int));
+        result[i] = malloc(col2 * sizeof(int));
     }
 
     for (i = 0; i < row1; i++) {
         for (j = 0; j < col2; j++) {
-            resultss[i][j] = 0;
+            result[i][j] = 0;
             for (k = 0; k < col1; k++) {
-                resultss[i][j] += matx1[i][k] * matx2[k][j];
+                result[i][j] += matx1[i][k] * matx2[k][j];
             }
         }
     }
@@ -234,15 +260,15 @@ void matx_transpose(int row, int col, int matx[row][col])
         printf("\n");
    } 
 
-    resultss = malloc(col * sizeof(int *));
+    result = malloc(col * sizeof(int *));
     for(i = 0; i < col; i++) {
-        resultss[i] = malloc(row * sizeof(int));
+        result[i] = malloc(row * sizeof(int));
     }
 
     for(i = 0; i < row; i++) {
         for(j = 0; j < col; j++) {
-            resultss[j][i] = 0;
-            resultss[j][i] = matx[i][j];
+            result[j][i] = 0;
+            result[j][i] = matx[i][j];
         }
     }
 }
@@ -357,7 +383,7 @@ int main(void)
     char input[__MAX_TOKEN_LEN__];
     char operator[__MAX_TOKEN_LEN__ / 2];
 
-    char *p = '\0', *st = '\0';
+    char *p = '\0';
 
     int i = 0, j = 0;
     int col, row, ind = 0;
@@ -367,8 +393,6 @@ int main(void)
     fgets(input, sizeof(input), stdin);
 
     op = checkoperation(input);
-
-    st = input;
 
     if((p = strpbrk(input, "+-*=)")) != NULL) {
             operator[i++] = *p;
@@ -384,7 +408,6 @@ int main(void)
     printf("rowxcol: %dx%d", row, col);
 
     int matx[row][col];
-    int result[row][col];
 
     matxinit(row, col, result);
 
@@ -471,10 +494,10 @@ int main(void)
    }  
 
     printf("\n");
-    printf("mul rowxcol: %dx%d\n", row, col);
+    printf("transp rowxcol: %dx%d\n", row, col);
     for(i = 0; i < col; i++) {
         for(j = 0; j < row; j++)
-            printf("%d ", resultss[i][j]);
+            printf("%d ", result[i][j]);
         printf("\n");
    } 
 
