@@ -24,6 +24,13 @@ typedef enum {
     OK = 10,
 }error_check;
 
+/**
+ * syntaxerror: Prints a syntax error message
+ * 
+ * @message- The error message printed
+ * 
+ * Return: Always returns ERR
+*/
 int syntaxerror(char *erro_message)
 {
     fprintf(stderr," *** syntax error ***\n");
@@ -32,7 +39,16 @@ int syntaxerror(char *erro_message)
     return ERR;
 }
 
-int check_matxcol(char *s, const int *column) 
+/**
+ * check_matxcol: Checks the number of coulumns of a matrix 
+ *                string against the columns of a refrence matrix string.
+ * 
+ * @s- The matrix string
+ * @column- The refrence number of columns
+ * 
+ * return: Returns OK if the number of colums are equal else returns BAD_DIM
+*/
+int check_matxcolm(char *s, const int *column) 
 {
     int test_col = 0;
 
@@ -56,6 +72,15 @@ int check_matxcol(char *s, const int *column)
     return check_matxcol(s + 1, column);
 }
 
+/**
+ * check_matxrow: Checks the number of rows of a matrix 
+ *                string against the rows of a refrence matrix string.
+ * 
+ * @s- The matrix string
+ * @column- The refrence number of rows
+ * 
+ * return: Returns OK if the number of rows are equal else returns BAD_DIM
+*/
 int check_matxrow(char *s, const int *row) 
 {
     int test_row = 0;;
@@ -72,6 +97,16 @@ int check_matxrow(char *s, const int *row)
     return OK;
 }
 
+/**
+ * find_matxdim: Finds the dimension of a matrix string.
+ * 
+ * @s- The matrix string
+ * @col- A pointer to the variable to hold the number of columns
+ * @row- A pointer to the variable to hold the number of rows.
+ * 
+ * return: Returns OK if the following columns match the first one
+ *         else return BAD_DIM
+*/
 int find_matxdim(char *s, int *col, int *row)
 {
     char *t = s; 
@@ -204,6 +239,17 @@ void submatx(int row, int col, int matx[row][col], int res[row][col])
     }    
 }
 
+/**
+ * multmatx: Multiplies two matrices.
+ * 
+ * @row1- number of rows of matrix 1
+ * @col1- The number of columns of matrix 1
+ * @matx1- One of the matrices to be multiplied.
+ * @row2- number of rows of matrix 2
+ * @col2- The number of columns of matrix 2
+ * @matx2- The other matrix to be modified.
+ * 
+*/
 void multmatx(int row1, int col1, int row2, int col2, int matx1[row1][col1], int matx2[row2][col2])
 {
     int i, j, k;
@@ -224,6 +270,13 @@ void multmatx(int row1, int col1, int row2, int col2, int matx1[row1][col1], int
 
 }
 
+/**
+ * matx_transpose: Find the transpose of a matrx.
+ * 
+ * @matx- The matrix.
+ * @row- The number of rows of the matrix.
+ * @col- The number of columns of the matrix.
+*/
 void matx_transpose(int row, int col, int matx[row][col])
 {
     int i, j;
