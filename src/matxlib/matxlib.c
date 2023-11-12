@@ -462,11 +462,16 @@ int main(void)
     op = checkoperation(input);
 
     printf("\nop: %d\n", op);
-    st = input;
-
-    if((p = strpbrk(input, "+-*=)")) != NULL) {
+    
+    if((p = strpbrk(input, "+*=)")) != NULL) {
+        if(*p == '-' && *(p + 1) == ' ') {
             operator[i++] = *p;
             *p = '\0';
+        }
+        else {
+            operator[i++] = *p;
+            *p = '\0';
+        }
     }   
 
     row = col = 0;
