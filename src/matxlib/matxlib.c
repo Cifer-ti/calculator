@@ -48,7 +48,7 @@ int syntaxerror(char *erro_message)
  * 
  * return: Returns OK if the number of colums are equal else returns BAD_DIM
 */
-int check_matxcolm(char *s, const int *column) 
+int check_matxcol(char *s, const int *column) 
 {
     int test_col = 0;
 
@@ -300,6 +300,43 @@ void matx_transpose(int row, int col, int matx[row][col])
     }
 }
 
+int formuppertriangularmatx(int row, int col, int matx[row][col]) {
+    int i, j, k;
+    int factor;
+
+    for (i = 0; i < row - 1; i++) {
+        for (j = i + 1; j < row; j++) {
+            if(matx[i][i] == 0)
+                return 1;
+            factor = matx[j][i] / matx[i][i];
+            for (k = i; k < row; k++) {
+                matx[j][k] -= factor * matx[i][k];
+            }
+        }
+    }
+}
+
+int matxdeterminant(int row, int col, int matx[row][col])
+{
+    int i, determinat = 1;
+
+    if(formuppertriangularmatx(row, col, matx) == 1)
+        return 0;
+
+    for (i = 0; i < row; i++) {
+        for (int j = 0; j < row; j++) {
+            printf("%d\t", matx[i][j]);
+        }
+        printf("\n");
+    }
+
+    for(i = 0; i < row; i++) {
+        determinat *= matx[i][i];
+    }
+
+    return determinat;
+}
+
 /**
  * eval: Checks the operation to be performed, and calls the 
  *       appropriate function to do it.
@@ -400,6 +437,9 @@ operation checkoperation(char *in)
     if(strncmp(str, "invs", 4) == 0)
         return inverse;
     
+    if(strncmp(str, "det", 3) == 0)
+        return determinant;
+    
     return NOT_FOUND;
 
 
@@ -421,6 +461,7 @@ int main(void)
 
     op = checkoperation(input);
 
+    printf("\nop: %d\n", op);
     st = input;
 
     if((p = strpbrk(input, "+-*=)")) != NULL) {
@@ -446,6 +487,7 @@ int main(void)
      *  since operators seperate differnt matrixes
      * replace it with '\0' so they can be as seperate strigs
      */
+    int de;
 
    switch(op) {
         case normal:
@@ -505,10 +547,18 @@ int main(void)
         
         case determinant:
             p = input;
-            if(check_matxdim(p, row, col, operator[ind]) == OK) {
-                p = parseMatrix(p, col, row, matx);
-                /* call determinant function */
+
+            printf("\nintput: %s\n", input);
+            while(*p != '(')
+                p++;
+            p = parseMatrix(++p, col, row, matx);
+            for(int z = 0; z < row; z++) {
+                for(int y = 0; y < col; y++)
+                    printf("%d ", matx[z][y]);
+                
+                printf("\n");
             }
+            de = matxdeterminant(row, col, matx);
             break;
 
         case transpose:
@@ -523,6 +573,8 @@ int main(void)
 
    }   
 
+    printf("determinant: %d\n", de);
+    /*
     printf("\n");
     printf("mul rowxcol: %dx%d\n", row, col);
     for(i = 0; i < row; i++) {
@@ -530,6 +582,7 @@ int main(void)
             printf("%d ", result[i][j]);
         printf("\n");
    } 
+   */
 
     return 0;
 } 
