@@ -8,7 +8,7 @@
 #define STR_END 6
 
 int row1, col1;
-int **resultss;
+double **resultss;
 
 typedef enum {
     normal,
@@ -178,7 +178,7 @@ error_check check_matxdim(char *str, int row, int col, char op)
     return OK;
 }
 
-
+/*This is where it starts */
 /**
  * mnatxinit: Initializes al elements of amatrix 
  *            to zero.
@@ -187,11 +187,11 @@ error_check check_matxdim(char *str, int row, int col, char op)
  * row- The number of rows of the matrix
  * col- The number of columns of the matrix.
 */
-void matxinit(int row, int col, int matx[row][col])
+void matxinit(int row, int col, double matx[row][col])
 {
     int i, j;
 
-    if(check_matxdim)
+    //if(check_matxdim)
     for(i = 0; i < row; i++) {
         for(j = 0; j < col; j++)
             matx[i][j] = 0;
@@ -209,7 +209,7 @@ void matxinit(int row, int col, int matx[row][col])
  * row- The row of the matrices.
  * col- The column of the matrices.
 */
-void addmatx(int row, int col, int matx[row][col], int res[row][col])
+void addmatx(int row, int col, double matx[row][col], double res[row][col])
 {
     int i, j;
 
@@ -229,7 +229,7 @@ void addmatx(int row, int col, int matx[row][col], int res[row][col])
  * row- The row of the matrices.
  * col- The column of the matrices.
 */
-void submatx(int row, int col, int matx[row][col], int res[row][col])
+void submatx(int row, int col, double matx[row][col], double res[row][col])
 {
     int i, j;
 
@@ -250,13 +250,13 @@ void submatx(int row, int col, int matx[row][col], int res[row][col])
  * @matx2- The other matrix to be modified.
  * 
 */
-void multmatx(int row1, int col1, int row2, int col2, int matx1[row1][col1], int matx2[row2][col2])
+void multmatx(int row1, int col1, int row2, int col2, double matx1[row1][col1], double matx2[row2][col2])
 {
     int i, j, k;
     
-    resultss = malloc(row1 * sizeof(int *));
+    resultss = malloc(row1 * sizeof(double *));
     for(i = 0; i < row1; i++) {
-        resultss[i] = malloc(col2 * sizeof(int));
+        resultss[i] = malloc(col2 * sizeof(double));
     }
 
     for (i = 0; i < row1; i++) {
@@ -277,19 +277,19 @@ void multmatx(int row1, int col1, int row2, int col2, int matx1[row1][col1], int
  * @row- The number of rows of the matrix.
  * @col- The number of columns of the matrix.
 */
-void matx_transpose(int row, int col, int matx[row][col])
+void matx_transpose(int row, int col, double matx[row][col])
 {
     int i, j;
 
     for(i = 0; i < row; i++) {
         for(j = 0; j < col; j++)
-            printf("%d ", matx[i][j]);
+            printf("%.2lf ", matx[i][j]);
         printf("\n");
    } 
 
-    resultss = malloc(col * sizeof(int *));
+    resultss = malloc(col * sizeof(double *));
     for(i = 0; i < col; i++) {
-        resultss[i] = malloc(row * sizeof(int));
+        resultss[i] = malloc(row * sizeof(double));
     }
 
     for(i = 0; i < row; i++) {
@@ -300,9 +300,9 @@ void matx_transpose(int row, int col, int matx[row][col])
     }
 }
 
-int formuppertriangularmatx(int row, int col, int matx[row][col]) {
+int formuppertriangularmatx(int row, int col, double matx[row][col]) {
     int i, j, k;
-    int factor;
+    double factor;
 
     for (i = 0; i < row - 1; i++) {
         for (j = i + 1; j < row; j++) {
@@ -316,25 +316,26 @@ int formuppertriangularmatx(int row, int col, int matx[row][col]) {
     }
 }
 
-int matxdeterminant(int row, int col, int matx[row][col])
+int matxdeterminant(int row, int col, double matx[row][col])
 {
-    int i, determinat = 1;
+    int i, j;
+    double det = 1.0;
 
     if(formuppertriangularmatx(row, col, matx) == 1)
         return 0;
 
     for (i = 0; i < row; i++) {
-        for (int j = 0; j < row; j++) {
-            printf("%d\t", matx[i][j]);
+        for (j = 0; j < row; j++) {
+            printf("%.2lf\t", matx[i][j]);
         }
         printf("\n");
     }
 
     for(i = 0; i < row; i++) {
-        determinat *= matx[i][i];
+        det *= matx[i][i];
     }
 
-    return determinat;
+    return det;
 }
 
 /**
@@ -346,7 +347,7 @@ int matxdeterminant(int row, int col, int matx[row][col])
  * row- The row of the matrices.
  * col- The col of the matrices.
 */
-void eval(int row, int col, int matx[row][col], int res[row][col], char op)
+void eval(int row, int col, double matx[row][col], double res[row][col], char op)
 {
     switch(op) {
         case '+':
@@ -374,7 +375,7 @@ void eval(int row, int col, int matx[row][col], int res[row][col], char op)
  * 
  * Return: returns a pointer to the next string in the input string.
 */
-char *parseMatrix(char* str, int col, int row, int matrix[row][col])
+char *parseMatrix(char* str, int col, int row, double matrix[row][col])
 {
     char *s = str;
        
@@ -385,7 +386,7 @@ char *parseMatrix(char* str, int col, int row, int matrix[row][col])
     int i = 0, j = 0;
 
     while(token != NULL) {
-        matrix[i][j] = atoi(token);
+        matrix[i][j] = atof(token);
         j++;
 
         if (j == col) {
@@ -397,15 +398,6 @@ char *parseMatrix(char* str, int col, int row, int matrix[row][col])
     }
     return s + 1;
 }
-
-/**
- * find_matxdim: Finds the dimension of a matrix, and stores
- *              the value into it's other two arguements.
- * 
- * str- The string containing the matrix.
- * row- will contain the row of the matrix.
- * col- Will contain the column of the matrix.
-*/
 
 /**
  * checkoperation: Determines the operation to be 
@@ -482,8 +474,8 @@ int main(void)
         
     printf("rowxcol: %dx%d", row, col);
 
-    int matx[row][col];
-    int result[row][col];
+    double matx[row][col];
+    double result[row][col];
 
     matxinit(row, col, result);
 
@@ -492,7 +484,7 @@ int main(void)
      *  since operators seperate differnt matrixes
      * replace it with '\0' so they can be as seperate strigs
      */
-    int de;
+    double de;
 
    switch(op) {
         case normal:
@@ -534,7 +526,7 @@ int main(void)
                         break;
                     }
 
-                    int mmatx[row1][col1];
+                    double mmatx[row1][col1];
 
                     matxinit(row1, col1, mmatx);
 
@@ -559,7 +551,7 @@ int main(void)
             p = parseMatrix(++p, col, row, matx);
             for(int z = 0; z < row; z++) {
                 for(int y = 0; y < col; y++)
-                    printf("%d ", matx[z][y]);
+                    printf("%.2lf ", matx[z][y]);
                 
                 printf("\n");
             }
@@ -578,7 +570,7 @@ int main(void)
 
    }   
 
-    printf("determinant: %d\n", de);
+    printf("determinant: %.2lf\n", de);
     /*
     printf("\n");
     printf("mul rowxcol: %dx%d\n", row, col);
