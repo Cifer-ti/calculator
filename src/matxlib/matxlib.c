@@ -365,7 +365,7 @@ void eval(int row, int col, double matx[row][col], double res[row][col], char op
 }
 
 /**
- * parseMatrix: Extracts the matrix from a string, and 
+ * parsematx: Extracts the matrix from a string, and 
  *              converts it into integer storing it into the matrix.
  * 
  * str- String containing the matrix.
@@ -375,7 +375,7 @@ void eval(int row, int col, double matx[row][col], double res[row][col], char op
  * 
  * Return: returns a pointer to the next string in the input string.
 */
-char *parseMatrix(char* str, int col, int row, double matrix[row][col])
+char *parsematx(char* str, int col, int row, double matrix[row][col])
 {
     char *s = str;
        
@@ -486,6 +486,7 @@ int main(void)
      */
     double de;
 
+    printf("Entering swithch\n");
    switch(op) {
         case normal:
 
@@ -500,7 +501,7 @@ int main(void)
             operator[i] = '\0';
             j = 0;
 
-            p = parseMatrix(input, col, row, matx);
+            p = parsematx(input, col, row, matx);
             addmatx(row, col, matx, result);
 
             switch(operator[j]) {
@@ -512,7 +513,7 @@ int main(void)
                             syntaxerror("Matrix not embedded correctly");
                             break;
                         }
-                    p = parseMatrix(p, col, row, matx);
+                    p = parsematx(p, col, row, matx);
                     eval(row, col, matx, result, operator[ind++]);
                     }
                 }
@@ -535,20 +536,21 @@ int main(void)
                         break;
                     }
 
-                    p = parseMatrix(p, col1, row1, mmatx);
+                    p = parsematx(p, col1, row1, mmatx);
                     multmatx(row, col, row1, col1, result, mmatx);
+                    break;
 
 
             }
+            break;
 
-        
         case determinant:
             p = input;
 
             printf("\nintput: %s\n", input);
             while(*p != '(')
                 p++;
-            p = parseMatrix(++p, col, row, matx);
+            p = parsematx(++p, col, row, matx);
             for(int z = 0; z < row; z++) {
                 for(int y = 0; y < col; y++)
                     printf("%.2lf ", matx[z][y]);
@@ -563,7 +565,7 @@ int main(void)
             p = input;
             while(*p != '(')
                 p++;
-            p = parseMatrix(++p, col, row, matx);
+            p = parsematx(++p, col, row, matx);
             matx_transpose(row, col, matx);
 
             break;
