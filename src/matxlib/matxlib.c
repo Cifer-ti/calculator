@@ -15,6 +15,8 @@ typedef enum {
     determinant,
     transpose,
     inverse,
+    add_subtr,
+    multiplication,
 }operation;
 
 typedef enum {
@@ -159,7 +161,7 @@ error_check check_matxdim(char *str, int row, int col, char op)
     switch(op) {
         case '+':
         case '-':
-            if(check_matxcol(str, &col) != OK && check_matxrow(str, &row) != OK)
+            if(check_matxcol(str, &col) != OK || check_matxrow(str, &row) != OK)
                 return BAD_DIM;
 
             break;
@@ -242,12 +244,12 @@ void submatx(int row, int col, double matx[row][col], double res[row][col])
 /**
  * multmatx: Multiplies two matrices.
  * 
- * @row1- number of rows of matrix 1
- * @col1- The number of columns of matrix 1
- * @matx1- One of the matrices to be multiplied.
- * @row2- number of rows of matrix 2
- * @col2- The number of columns of matrix 2
- * @matx2- The other matrix to be modified.
+ * row1- number of rows of matrix 1
+ * col1- The number of columns of matrix 1
+ * matx1- One of the matrices to be multiplied.
+ * row2- number of rows of matrix 2
+ * col2- The number of columns of matrix 2
+ * matx2- The other matrix to be modified.
  * 
 */
 void multmatx(int row1, int col1, int row2, int col2, double matx1[row1][col1], double matx2[row2][col2])
@@ -280,12 +282,6 @@ void multmatx(int row1, int col1, int row2, int col2, double matx1[row1][col1], 
 void matx_transpose(int row, int col, double matx[row][col])
 {
     int i, j;
-
-    for(i = 0; i < row; i++) {
-        for(j = 0; j < col; j++)
-            printf("%.2lf ", matx[i][j]);
-        printf("\n");
-   } 
 
     resultss = malloc(col * sizeof(double *));
     for(i = 0; i < col; i++) {
@@ -437,6 +433,18 @@ operation checkoperation(char *in)
 
 }
 
+void printresult(int row, int col, double matx[row][col])
+{
+    int i, j;
+
+    printf("\n");
+    for(i = 0; i < row; i++) {
+        for(j = 0; j < col; j++)
+            printf("%.2lf ", matx[i][j]);
+        printf("\n");
+    }
+}
+
 int main(void)
 {   
     char input[__MAX_TOKEN_LEN__];
@@ -455,7 +463,7 @@ int main(void)
 
     printf("\nop: %d\n", op);
     
-    if((p = strpbrk(input, "+*=)")) != NULL) {
+    if((p = strpbrk(input, "+-*=)")) != NULL) {
         if(*p == '-' && *(p + 1) == ' ') {
             operator[i++] = *p;
             *p = '\0';
@@ -482,11 +490,11 @@ int main(void)
 
     /**
      *  since operators seperate differnt matrixes
-     * replace it with '\0' so they can be as seperate strigs
+     * replace it with '\0' so they can be as seperate strings
      */
     double de;
+    int ret_status;
 
-    printf("Entering swithch\n");
    switch(op) {
         case normal:
 
@@ -494,9 +502,20 @@ int main(void)
                 p = strpbrk(p + 1, "+-*="); 
                 if( p == NULL)
                     break;
-                if(*p != '=')
-                    operator[i++] = *p;
-                *p = '\0';
+                if(*p != '=') {
+                    if(*p == '-' && *(p + 1) == ' ') {
+                        operator[i++] = *p;
+                        *p = '\0';
+                    }
+                    else if(*p != '-') {
+                        operator[i++] = *p;
+                        *p = '\0';
+                    }
+                }
+                else if( *p == '=') {
+                    *p = '\0';
+                    break;
+                }
             }
             operator[i] = '\0';
             j = 0;
@@ -508,15 +527,18 @@ int main(void)
                 case '+':
                 case '-':
                     while(*p != '\n') {
-                    if(p + 1 != NULL) {
-                        if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) {
-                            syntaxerror("Matrix not embedded correctly");
-                            break;
-                        }
-                    p = parsematx(p, col, row, matx);
-                    eval(row, col, matx, result, operator[ind++]);
+                        if(p + 1 != NULL) {
+                            if(ind < i && (ret_status = check_matxdim(p, row, col, operator[ind])) != OK) {
+                                syntaxerror("Matrix not embedded correctly");
+                                break;
+                            }
+                        p = parsematx(p, col, row, matx);
+                        eval(row, col, matx, result, operator[ind++]);
                     }
                 }
+                if(ret_status != OK)
+                    break;
+                printresult(row, col, result);
                 break;
 
                 case '*':
@@ -531,13 +553,21 @@ int main(void)
 
                     matxinit(row1, col1, mmatx);
 
-                    if(ind < i && check_matxdim(p, row, col, operator[ind]) != OK) {
+                    if(ind < i && (ret_status = check_matxdim(p, row, col, operator[ind])) != OK) {
                         syntaxerror("Matrix not embedded properly");
                         break;
                     }
 
                     p = parsematx(p, col1, row1, mmatx);
                     multmatx(row, col, row1, col1, result, mmatx);
+
+                    /* print result */
+                    printf("\n");
+                    for(i = 0; i < col; i++) {
+                        for(j = 0; j < row1; j++)
+                            printf("%.2lf ", resultss[i][j]);
+                        printf("\n");
+                    }
                     break;
 
 
@@ -547,17 +577,12 @@ int main(void)
         case determinant:
             p = input;
 
-            printf("\nintput: %s\n", input);
-            while(*p != '(')
+            while(*p != '(') /* move pointer to begining of the matrix in string */
                 p++;
+
             p = parsematx(++p, col, row, matx);
-            for(int z = 0; z < row; z++) {
-                for(int y = 0; y < col; y++)
-                    printf("%.2lf ", matx[z][y]);
-                
-                printf("\n");
-            }
             de = matxdeterminant(row, col, matx);
+            printf("determinant: %.2lf\n", de);
             break;
 
         case transpose:
@@ -568,20 +593,16 @@ int main(void)
             p = parsematx(++p, col, row, matx);
             matx_transpose(row, col, matx);
 
+            /* print result */
+            for(i = 0; i < col; i++) {
+                for(j = 0; j < row; j++)
+                    printf("%.2lf ", resultss[i][j]);
+                printf("\n");
+            }
+
             break;
 
    }   
-
-    printf("determinant: %.2lf\n", de);
-    /*
-    printf("\n");
-    printf("mul rowxcol: %dx%d\n", row, col);
-    for(i = 0; i < row; i++) {
-        for(j = 0; j < col; j++)
-            printf("%d ", result[i][j]);
-        printf("\n");
-   } 
-   */
 
     return 0;
 } 
