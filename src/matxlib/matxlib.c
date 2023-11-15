@@ -463,16 +463,22 @@ int main(void)
 
     printf("\nop: %d\n", op);
     
-    if((p = strpbrk(input, "+-*=)")) != NULL) {
-        if(*p == '-' && *(p + 1) == ' ') {
-            operator[i++] = *p;
-            *p = '\0';
+    p = strpbrk(input, "+-*=)");
+    while(1){
+        if(p != NULL) {
+            if(*p == '-' && *(p + 1) == ' ') {
+                operator[i++] = *p;
+                *p = '\0';
+                break;
+            }
+            else if(*p != '-') {
+                operator[i++] = *p;
+                *p = '\0';
+                break;
+            }
         }
-        else {
-            operator[i++] = *p;
-            *p = '\0';
-        }
-    }   
+        p = strpbrk(p + 1, "+-*=)");
+    }  
 
     row = col = 0;
     if(find_matxdim(input, &col, &row) != OK) {
