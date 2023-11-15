@@ -460,8 +460,6 @@ int main(void)
     fgets(input, sizeof(input), stdin);
 
     op = checkoperation(input);
-
-    printf("\nop: %d\n", op);
     
     p = strpbrk(input, "+-*=)");
     while(1){
@@ -486,7 +484,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
         
-    printf("rowxcol: %dx%d", row, col);
+    printf("\nrowxcol: %dx%d\n\n", row, col);
 
     double matx[row][col];
     double result[row][col];
@@ -569,8 +567,8 @@ int main(void)
 
                     /* print result */
                     printf("\n");
-                    for(i = 0; i < col; i++) {
-                        for(j = 0; j < row1; j++)
+                    for(i = 0; i < row; i++) {
+                        for(j = 0; j < col1; j++)
                             printf("%.2lf ", resultss[i][j]);
                         printf("\n");
                     }
@@ -592,7 +590,6 @@ int main(void)
             break;
 
         case transpose:
-            printf("\ninput: %s\n", input);
             p = input;
             while(*p != '(')
                 p++;
