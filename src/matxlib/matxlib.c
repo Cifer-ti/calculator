@@ -275,9 +275,9 @@ void multmatx(int row1, int col1, int row2, int col2, double matx1[row1][col1], 
 /**
  * matx_transpose: Find the transpose of a matrx.
  * 
- * @matx- The matrix.
- * @row- The number of rows of the matrix.
- * @col- The number of columns of the matrix.
+ * matx- The matrix.
+ * row- The number of rows of the matrix.
+ * col- The number of columns of the matrix.
 */
 void matx_transpose(int row, int col, double matx[row][col])
 {
@@ -296,6 +296,17 @@ void matx_transpose(int row, int col, double matx[row][col])
     }
 }
 
+
+/**
+ * formuppertriangularmatx: Reduces a matrix to it's upper trangular form.
+ * 
+ * row- The matrix row.
+ * col- The column of the matrix.
+ * matx- The matrix to be reduced to upper triangular form.
+ * 
+ * return: Returns 1 if the at some point, the elements on the leading
+ *          diagonal is zero.
+*/
 int formuppertriangularmatx(int row, int col, double matx[row][col]) {
     int i, j, k;
     double factor;
@@ -312,13 +323,25 @@ int formuppertriangularmatx(int row, int col, double matx[row][col]) {
     }
 }
 
+/**
+ * matxdeterminant: Computes the determinant of a matrix, by
+ *                  multiplying the elements of the leading diagonal of the 
+ *                  upper trangular form of that matrix.
+ * 
+ * row- The number of row of the matrix.
+ * col- The number of columns of the matrix.
+ * matx- The matrix to be computed.
+ * 
+ * return: Returns the determinant of the matrix.
+*/
 int matxdeterminant(int row, int col, double matx[row][col])
 {
     int i, j;
     double det = 1.0;
 
     if(formuppertriangularmatx(row, col, matx) == 1)
-        return 0;
+        return 0;   /* if at some point elements on the leading daigonal is zero when forming upper
+                        triangular matrix is zero, then the determinant is obviously zero*/
 
     for (i = 0; i < row; i++) {
         for (j = 0; j < row; j++) {
