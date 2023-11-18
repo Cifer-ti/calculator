@@ -29,7 +29,7 @@ typedef enum {
 /**
  * syntaxerror: Prints a syntax error message
  * 
- * @message- The error message printed
+ * message- The error message printed
  * 
  * Return: Always returns ERR
 */
@@ -54,7 +54,7 @@ int check_matxcol(char *s, const int *column)
 {
     int test_col = 0;
 
-    while(*s == ' ')
+    while(*s == ' ')    /* skip any trailing white spae at the begining of string */
         s++;
 
     if(*s == '\0' || *s == '\n')
@@ -193,7 +193,6 @@ void matxinit(int row, int col, double matx[row][col])
 {
     int i, j;
 
-    //if(check_matxdim)
     for(i = 0; i < row; i++) {
         for(j = 0; j < col; j++)
             matx[i][j] = 0;
@@ -398,7 +397,8 @@ char *parsematx(char* str, int col, int row, double matrix[row][col])
 {
     char *s = str;
        
-    while(*s != '\0')
+    while(*s != '\0')   /* move the the end of the string so the function can return
+                             a pointer to the next matrix string representation, since they are seperated by '\0'*/
         s++;
 
     char *token = strtok(str, ",;");
@@ -430,7 +430,7 @@ operation checkoperation(char *in)
     char str[5];
     int i = 0;
 
-    if(*in == '|')
+    if(*in == '|')     /* the functionality for putting |matxstr| is still to be implemented */
         return determinant;
     
     if(isalpha(*in)) {
@@ -456,6 +456,16 @@ operation checkoperation(char *in)
 
 }
 
+/**
+ * printresult: Prints the result after addition and subtraction
+ *              doesn't yet work for other operations.
+ * 
+ * row- The number of rows of the matrix
+ * col- The number of columns of the matrix
+ * matx- The matx that holds the result.
+ * 
+ * 
+*/
 void printresult(int row, int col, double matx[row][col])
 {
     int i, j;
