@@ -102,9 +102,9 @@ int check_matxrow(char *s, const int *row)
 /**
  * find_matxdim: Finds the dimension of a matrix string.
  * 
- * @s- The matrix string
- * @col- A pointer to the variable to hold the number of columns
- * @row- A pointer to the variable to hold the number of rows.
+ * s- The matrix string
+ * col- A pointer to the variable to hold the number of columns
+ * row- A pointer to the variable to hold the number of rows.
  * 
  * return: Returns OK if the following columns match the first one
  *         else return BAD_DIM
@@ -423,7 +423,7 @@ char *parsematx(char* str, int col, int row, double matrix[row][col])
  *                 performed on a matrix, by reading it form the
  *                 input string.
  * 
- * *in: Pointer to the input string.
+ * in: Pointer to the input string.
 */
 operation checkoperation(char *in)
 {
@@ -636,6 +636,10 @@ int main(void)
                 printf("\n");
             }
 
+            break;
+
+        default:
+            printf("Sorry Opertion is not yet implemented or isn't recognised\n");
             break;
 
    }   
