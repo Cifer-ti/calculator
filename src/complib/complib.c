@@ -18,6 +18,7 @@ typedef enum {
 ComplexNumber c1, c2;
 
 OperationChoice Printoptions(void);
+void getComplexnum(void);
 
 int main() {
     char sign; // To store the '+' or '-' sign
@@ -37,22 +38,26 @@ int main() {
         switch(choice) {
             case addition:
                 printf("a\n");
+                getComplexnum();
                 //call addition routine
                 break;
             
             case subtraction:
                 printf("s\n");
+                getComplexnum();
                 //call subtraction routine
                 break;
             
             case multiplication:
                 printf("m\n");
+                getComplexnum();
 
                 //call multiplication routine
                 break;
             
             case division:
                 printf("d\n");
+                getComplexnum();
                 //call division routine
                 break;
             
@@ -74,4 +79,26 @@ OperationChoice Printoptions(void)
 {
     printf("****Operations List****\n");
     printf("1- ADDITION\n 2- SUBTRACTION\n 3- MULTIPLICATION\n 4- DIVISION\n 0- EXIT\n");
+}
+
+void getComplexnum(void)
+{   
+    char i, sign;
+
+    printf("Enter first complex number: ");
+    if(scanf("%lf %c %lf %c", &c1.real, &sign, &c1.imaginary, &i) != 4) {
+        fprintf(stderr, "Wrong format\n");
+    }
+
+    if(sign == '-')
+        c1.imaginary = -c1.imaginary;
+
+    printf("Enter second complex number: ");
+   if(scanf("%lf %c %lf %c", &c2.real, &sign, &c2.imaginary, &i) != 4) {
+        fprintf(stderr, "Wrong format\n");
+    }
+
+    if(sign == '-')
+        c2.imaginary = -c2.imaginary;
+
 }
