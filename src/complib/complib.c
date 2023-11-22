@@ -12,7 +12,8 @@ typedef enum {
     subtraction,
     multiplication,
     division,
-    ERR,
+    Clear,
+    optionBoard,
 }OperationChoice;
 
 OperationChoice Printoptions(void);
@@ -36,7 +37,12 @@ int main() {
     do {
 
         printf("what do you want to do: ");
-        scanf("%d", &choice);
+        if(scanf("%d", &choice) != 1) {
+            fprintf(stderr, "\nError: Code format not supported! Try '6' to see operation code board\n\n");
+            while(getchar() != '\n')    /* consume bad code */
+                ;
+            continue;
+        }
 
         switch(choice) {
             case addition:
@@ -71,12 +77,26 @@ int main() {
                 printf("ex\n");
                 exit(EXIT_FAILURE);
             
-            case ERR:
-                printf("er\n");
+            case Clear:
+                system("clear");
                 continue;
+                break;
+            
+            case optionBoard:
+                Printoptions();
+                continue;
+                break;
+            
+            default:
+                fprintf(stderr, "\n# Operation code %d not recognised #\n", choice);
+                fprintf(stderr, "Try code '6' to check operation board\n\n");
+                continue;
+                break;
         }
+
         printf("Answer = %.2lf + %.2lfi\n", ans.real, ans.imaginary);
-    }while(1);
+
+    } while(1);
 
     return 0;
 
@@ -84,8 +104,9 @@ int main() {
 
 OperationChoice Printoptions(void)
 {
-    printf("****Operations List****\n");
-    printf("1- ADDITION\n 2- SUBTRACTION\n 3- MULTIPLICATION\n 4- DIVISION\n 0- EXIT\n");
+    printf("**** Operations code List ****\n\n");
+    printf(" \t0- EXIT\n \t1- ADDITION\n \t2- SUBTRACTION\n \t3- MULTIPLICATION\n \t4- DIVISION\n \t5- clear\n"
+            "\t6- Show option board\n\n");
 }
 
 void getComplexnum(ComplexNumber *z1, ComplexNumber *z2)
