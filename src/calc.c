@@ -6,11 +6,13 @@
 #include "scilib/scilib.h"
 
 typedef enum {
+    quit,
     scientific,
     matrix,
     complex,
     clear,
-    quit,
+    print,
+    help,
 }Choice;
 
 typedef enum {
@@ -31,7 +33,7 @@ int main(int argc, char **argv)
     else
         choiceOfMode = commandline;
 
-    if(choiceOfMode == commandline) {
+    if(choiceOfMode == interactive) {
         PrintMainBoard();
         do {
             printf("What do you want to do(choose from the above operation codes): ");
@@ -42,15 +44,18 @@ int main(int argc, char **argv)
                     printf("quit\n");
                     return 0;
                 case 1:
+                    choice = scientific;
                     printf("scientific lib\n");
                     break;
                 
                 case 2:
                     printf("Matrixlib\n");
+                    choice = matrix;
                     break;
 
                 case 3:
                     printf("complex lib\n");
+                    choice = complex;
                     break;
 
                 case 4:
@@ -61,7 +66,49 @@ int main(int argc, char **argv)
                     printf("print\n");
                     break;
             }
-        }while(1);
+        } while(1);
+    }
+
+    else if(choiceOfMode == commandline) {
+        int opt;
+
+        struct option commandlineOptions[] = {
+            {"sci", no_argument, NULL, 's'},
+            {"matx", no_argument, NULL, 'm'},
+            {"compx", no_argument, NULL, 'c'},
+            {"help", no_argument, NULL, 'h'},
+            {NULL, 0, NULL, 0},
+        };
+
+        while((opt = getopt_long(argc, argv, "smch", commandlineOptions, NULL)) != -1) {
+            switch(opt) {
+                case 's':
+                case 'S':
+                    printf("sic\n");
+                    choice = scientific;
+                    break;
+
+                case 'm':
+                    printf("moat\n");
+                    choice = matrix;
+                    break;
+                
+                case 'c':
+                    printf("com");
+                    choice = complex;
+                    break;
+
+                case 'h':
+                case 'H':
+                    printf("help");
+                    choice = help;
+                    break;
+
+                case '?':
+                    fprintf(stderr, "Try 'ls --help' for more information.\n");
+                    break;
+            }
+        }
     }
 }
 
