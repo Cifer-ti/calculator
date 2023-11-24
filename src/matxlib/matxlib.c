@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "matxlib.h"
 
 #define __MAX_TOKEN_LEN__ 512
 #define STR_END 6
@@ -433,6 +434,17 @@ operation checkoperation(char *in)
     if(*in == '|')     /* the functionality for putting |matxstr| is still to be implemented */
         return determinant;
     
+    if(*in == 'q') {
+        strncpy(str, in, 4);
+        str[strlen(str)] = '\0';
+
+        if(strncmp(str, "q", 1) == 0)
+            return quit;
+
+        else if(strncmp(str, "q!", 2) == 0)
+            return immediatequit;
+    }
+    
     if(isalpha(*in)) {
         while(*in != '(' && *in != '\n') {
             str[i++] = *in++;
@@ -482,18 +494,32 @@ int main(void)
 {   
     char input[__MAX_TOKEN_LEN__];
     char operator[__MAX_TOKEN_LEN__ / 2];
+    int ReturnState = 0;
 
     char *p = '\0', *st = '\0';
 
     int i = 0, j = 0;
     int col, row, ind = 0;
-    operation op;
+    int op;
 
     printf("Enter matrix expression: ");
     fgets(input, sizeof(input), stdin);
 
     op = checkoperation(input);
+
+
+    if(op == quit)
+        return quit;
+    else if(op == immediatequit)
+        exit(EXIT_FAILURE);
     
+    if(op == normal) {
+        if((st = strchr(input, '=')) == NULL) {
+            syntaxerror("Required '=' at end of string");
+            return Continue;
+        }
+    }
+
     p = strpbrk(input, "+-*=)");
     while(1){
         if(p != NULL) {
@@ -514,7 +540,7 @@ int main(void)
     row = col = 0;
     if(find_matxdim(input, &col, &row) != OK) {
         syntaxerror("Bad matrix dimension");
-        exit(EXIT_FAILURE);
+        return Continue;
     }
         
     printf("\nrowxcol: %dx%d\n\n", row, col);
@@ -623,6 +649,7 @@ int main(void)
             break;
 
         case transpose:
+            printf("transpose");
             p = input;
             while(*p != '(')
                 p++;
@@ -644,5 +671,5 @@ int main(void)
 
    }   
 
-    return 0;
+    return Continue;
 } 

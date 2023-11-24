@@ -27,12 +27,14 @@ int main(int argc, char **argv)
     int choice;
     Mode choiceOfMode;
 
+    printf("argc: %d\n", argc);
     /* determine if user is in interactive or commandline mode */
-    if(argc == 0)
+    if(argc == 1)
         choiceOfMode = interactive;
     else
         choiceOfMode = commandline;
 
+    printf("%d\n", choiceOfMode);
     if(choiceOfMode == interactive) {
         PrintMainBoard();
         do {
@@ -94,13 +96,13 @@ int main(int argc, char **argv)
                     break;
                 
                 case 'c':
-                    printf("com");
+                    printf("com\n");
                     choice = complex;
                     break;
 
                 case 'h':
                 case 'H':
-                    printf("help");
+                    printf("help\n");
                     choice = help;
                     break;
 
