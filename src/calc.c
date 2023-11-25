@@ -39,7 +39,12 @@ int main(int argc, char **argv)
         PrintMainBoard();
         do {
             printf("What do you want to do(choose from the above operation codes): ");
-            scanf("%d", &choice);
+
+            if(scanf("%d", &choice) != 1) { /* consume bad command */
+                while(getchar() != '\n')
+                    ;
+            }
+
 
             switch(choice) {
                 case 0:
