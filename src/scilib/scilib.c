@@ -564,7 +564,7 @@ double evaluate(void)
 }
 
 
-int main(void)
+int scimain(void)
 {   
     double ans;
 

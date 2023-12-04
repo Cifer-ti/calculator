@@ -27,6 +27,8 @@ int getexpr(FILE *stream);
 /**
  * postfixconvert: Converts the input into postfix notation.
 */
+
+int scimain(void);
 void postfixConvert(void);
 
 double evaluate(void);

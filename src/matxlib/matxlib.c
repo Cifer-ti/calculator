@@ -439,7 +439,7 @@ operation checkoperation(char *in)
         str[strlen(str)] = '\0';
 
         if(strncmp(str, "q", 1) == 0)
-            return quit;
+            return l_quit;
 
         else if(strncmp(str, "q!", 2) == 0)
             return immediatequit;
@@ -490,7 +490,7 @@ void printresult(int row, int col, double matx[row][col])
     }
 }
 
-int main(void)
+int matxmain(void)
 {   
     char input[__MAX_TOKEN_LEN__];
     char operator[__MAX_TOKEN_LEN__ / 2];
@@ -508,8 +508,8 @@ int main(void)
     op = checkoperation(input);
 
 
-    if(op == quit)
-        return quit;
+    if(op == l_quit)
+        return l_quit;
     else if(op == immediatequit)
         exit(EXIT_FAILURE);
     
@@ -649,7 +649,7 @@ int main(void)
             break;
 
         case transpose:
-            printf("transpose");
+            printf("transpose: \n");
             p = input;
             while(*p != '(')
                 p++;

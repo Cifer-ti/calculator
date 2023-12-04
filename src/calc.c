@@ -77,13 +77,23 @@ int main(int argc, char **argv)
         argp_parse(&argp, argc, argv, 0, 0, 0);
     }
 
-    switch(choice) {
-        case scientific:
-            scimain();
-            break;
-        case matrix:
-            matxmain();
-            break;
+    while(1) {
+        switch(choice) {
+            case scientific:
+                scimain();
+                break;
+            
+            case matrix:
+                while(matxmain() != l_quit)
+                    ;
+                break;
+
+            case complex:
+                compxmain();
+                break;
+        }
+
+        dashboard();
     }
 }
 
@@ -106,6 +116,7 @@ void dashboard(void)
                     ;
                 continue;
             }
+            getchar();
 
 
             switch(code) {

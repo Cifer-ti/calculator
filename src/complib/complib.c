@@ -7,13 +7,14 @@ typedef struct {
 } ComplexNumber;
 
 typedef enum {
-    quit,
+    Exit,
     addition,
     subtraction,
     multiplication,
     division,
     Clear,
     optionBoard,
+    quit,
 }OperationChoice;
 
 OperationChoice Printoptions(void);
@@ -23,7 +24,7 @@ void complexSubtraction(ComplexNumber z1, ComplexNumber z2, ComplexNumber *ans);
 void complexMultiplication(ComplexNumber z1, ComplexNumber z2, ComplexNumber *ans);
 void complexDivision(ComplexNumber z1, ComplexNumber z2, ComplexNumber *ans);
 
-int main() {
+int compxmain(void) {
     char sign; // To store the '+' or '-' sign
     char i; // To store the 'i' character
     int choice;
@@ -73,9 +74,9 @@ int main() {
                 //call division routine
                 break;
             
-            case quit:
+            case Exit:
                 printf("ex\n");
-                exit(EXIT_FAILURE);
+                exit(EXIT_SUCCESS);
             
             case Clear:
                 system("clear");
@@ -86,6 +87,9 @@ int main() {
                 Printoptions();
                 continue;
                 break;
+            
+            case quit:
+                return l_quit;
             
             default:
                 fprintf(stderr, "\n# Operation code %d not recognised #\n", choice);
@@ -106,7 +110,7 @@ OperationChoice Printoptions(void)
 {
     printf("**** Operations code List ****\n\n");
     printf(" \t0- EXIT\n \t1- ADDITION\n \t2- SUBTRACTION\n \t3- MULTIPLICATION\n \t4- DIVISION\n \t5- clear\n"
-            "\t6- Show option board\n\n");
+            "\t6- Show option board\n \t7- quit\n\n");
 }
 
 void getComplexnum(ComplexNumber *z1, ComplexNumber *z2)
