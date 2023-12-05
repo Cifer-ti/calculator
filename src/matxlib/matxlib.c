@@ -492,6 +492,9 @@ void printresult(int row, int col, double matx[row][col])
 
 int matxmain(void)
 {   
+
+    printf("\n*** MATRIX CALCULATOR ***\n\n");
+
     char input[__MAX_TOKEN_LEN__];
     char operator[__MAX_TOKEN_LEN__ / 2];
     int ReturnState = 0;

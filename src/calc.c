@@ -6,7 +6,7 @@
 #include "matxlib/matxlib.h"
 #include "scilib/scilib.h"
 
-int choice = 0;
+int choice = -1;
 
 typedef enum {
     quit,
@@ -50,14 +50,12 @@ int main(int argc, char **argv)
 {
     Mode choiceOfMode;
 
-    printf("argc: %d\n", argc);
     /* determine if user is in interactive or commandline mode */
     if(argc == 1)
         choiceOfMode = interactive;
     else
         choiceOfMode = commandline;
 
-    printf("%d\n", choiceOfMode);
     if(choiceOfMode == interactive) {
         PrintMainBoard();
         dashboard();
@@ -80,7 +78,8 @@ int main(int argc, char **argv)
     while(1) {
         switch(choice) {
             case scientific:
-                scimain();
+                while(scimain() != l_quit)
+                    ;
                 break;
             
             case matrix:
@@ -89,7 +88,12 @@ int main(int argc, char **argv)
                 break;
 
             case complex:
-                compxmain();
+                while(compxmain() != l_quit)
+                    ;
+                break;
+            
+            default :
+                printf("Unsupported operation\n");
                 break;
         }
 
@@ -109,9 +113,10 @@ void dashboard(void)
     int code;
 
     do {
-            printf("What do you want to do(choose from the operation codes): ");
+            printf("\nWhat do you want to do(choose from the operation codes. '5' to see operation codes): ");
 
             if(scanf("%d", &code) != 1) { /* consume bad command */
+                fprintf(stderr, "Error: code format not supported\n\n");
                 while(getchar() != '\n')
                     ;
                 continue;
@@ -121,30 +126,31 @@ void dashboard(void)
 
             switch(code) {
                 case 0:
-                    printf("quit\n");
                     exit(EXIT_SUCCESS);
+
                 case 1:
                     choice = scientific;
-                    printf("scientific lib\n");
                     return;
                 
                 case 2:
-                    printf("Matrixlib\n");
                     choice = matrix;
                     return;
 
                 case 3:
-                    printf("complex lib\n");
                     choice = complex;
                     return;
 
                 case 4:
-                    printf("clear\n");
-                    return;
+                    system("clear");
+                    break;
 
                 case 5:
-                    printf("print\n");
-                    return;
+                    PrintMainBoard();
+                    break;
+                
+                default :
+                    printf("Unreognised Code try '5' to check list of operation codes\n");
+                    break;
             }
         } while(1);
 }

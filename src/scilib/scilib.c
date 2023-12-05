@@ -570,17 +570,21 @@ int scimain(void)
 
     postfixStack = stackinit(__MAX_TOKEN_LEN__);
 
-    printf("Enter expresions: ");
-    if(getexpr(stdin) == READ_ERR) {
-        printf("Error in read, Program aborted\n");
-        exit(EXIT_FAILURE);
+    printf("\n*** SCIENTIFIC CALCUCATOR ***\n\n");
+
+    while(1) {
+        printf("Enter expresions: ");
+        if(getexpr(stdin) == READ_ERR) {
+            printf("Error in read, Program aborted\n");
+            return l_quit;
+        }
+        
+        postfixConvert();
+
+        ans = evaluate();
+
+        printf("Answer = %lf\n", ans);
     }
-    
-    postfixConvert();
-
-    ans = evaluate();
-
-    printf("Answer = %lf\n", ans);
     
     return 0;
 }

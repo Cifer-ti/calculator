@@ -13,6 +13,10 @@ struct buffer {
     int type_flag;
 };
 
+#define Continue -1
+#define l_quit -2
+#define immediatequit -3
+
 typedef struct buffer *Buffer;
 /**
  * getexpr: Reads the expression to be evaluated from a file stream,

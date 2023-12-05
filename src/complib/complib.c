@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "complib.h"
 
 typedef struct {
     double real;
@@ -37,7 +38,7 @@ int compxmain(void) {
     Printoptions();
     do {
 
-        printf("what do you want to do: ");
+        printf("what do you want to do ('6' to show operation board): ");
         if(scanf("%d", &choice) != 1) {
             fprintf(stderr, "\nError: Code format not supported! Try '6' to see operation code board\n\n");
             while(getchar() != '\n')    /* consume bad code */
@@ -47,35 +48,30 @@ int compxmain(void) {
 
         switch(choice) {
             case addition:
-                printf("a\n");
                 getComplexnum(&c1, &c2);
                 complexAddition(c1, c2, &ans);
-                //call addition routine
+                printf("Answer = %.2lf + %.2lfi\n", ans.real, ans.imaginary);
                 break;
             
             case subtraction:
-                printf("s\n");
                 getComplexnum(&c1, &c2);
                 complexSubtraction(c1, c2, &ans);
-                //call subtraction routine
+                printf("Answer = %.2lf + %.2lfi\n", ans.real, ans.imaginary);
                 break;
             
             case multiplication:
-                printf("m\n");
                 getComplexnum(&c1, &c2);
                 complexMultiplication(c1, c2, &ans);
-                //call multiplication routine
+                printf("Answer = %.2lf + %.2lfi\n", ans.real, ans.imaginary);
                 break;
             
             case division:
-                printf("d\n");
                 getComplexnum(&c1, &c2);
                 complexDivision(c1, c2, &ans);
-                //call division routine
+                printf("Answer = %.2lf + %.2lfi\n", ans.real, ans.imaginary);
                 break;
             
             case Exit:
-                printf("ex\n");
                 exit(EXIT_SUCCESS);
             
             case Clear:
@@ -97,8 +93,6 @@ int compxmain(void) {
                 continue;
                 break;
         }
-
-        printf("Answer = %.2lf + %.2lfi\n", ans.real, ans.imaginary);
 
     } while(1);
 
