@@ -28,6 +28,8 @@ void dashboard(void);
 
 static int parse_opt(int key, char *arg, struct argp_state *state)
 {
+    (void)*arg;
+    (void)*state;
     switch(key) {
         case 's':
             choice = scientific;
