@@ -66,13 +66,15 @@ int main(int argc, char **argv)
     else if(choiceOfMode == commandline) {
 
         static struct argp_option options[] = {
+            {0, 0, 0, 0, "Calculator Mode:", 7},
             {"sci", 's', 0, 0, "perform normal operaions"},
             {"matx", 'm', 0, 0, "Perform matrix operations"},
             {"compx", 'c', 0, 0, "Perform operations on complex numbers"},
+            {0, 0, 0, 0, "Information Options:", -1},
             {0}
         };
 
-        struct argp argp = {options, parse_opt};
+        struct argp argp = {options, parse_opt, 0, "A command line calculator"};
 
         argp_parse(&argp, argc, argv, 0, 0, 0);
     }
