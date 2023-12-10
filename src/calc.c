@@ -1,5 +1,5 @@
-#include <getopt.h>
 #include <argp.h>
+#include <argz.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "complib/complib.h"
@@ -23,34 +23,23 @@ typedef enum {
     interactive,
 }Mode;
 
+struct arguements {
+    char *argz;
+    size_t argz_len;
+};
+
+const char *argp_program_bug_address = "tallatiza6@gmail.com";
+const char *argp_program_version = "version 1.0";
+
 void PrintMainBoard(void);
 void dashboard(void);
-
-static int parse_opt(int key, char *arg, struct argp_state *state)
-{
-    (void)*arg;
-    (void)*state;
-    switch(key) {
-        case 's':
-            choice = scientific;
-            break;
-        
-        case 'm':
-            choice = matrix;
-            break;
-
-        case 'c':
-            choice = complex;
-            break;
-    }
-
-    return 0;
-}
+static int parse_opt(int key, char *arg, struct argp_state *state);
 
 
 int main(int argc, char **argv)
 {
     Mode choiceOfMode;
+    struct arguements arguements;
 
     /* determine if user is in interactive or commandline mode */
     if(argc == 1)
@@ -76,7 +65,16 @@ int main(int argc, char **argv)
 
         struct argp argp = {options, parse_opt, 0, "A command line calculator"};
 
-        argp_parse(&argp, argc, argv, 0, 0, 0);
+        if(argp_parse(&argp, argc, argv, 0, 0, &arguements) == 0) {
+            const char *prev = NULL;
+            char *word;
+            while(word = argz_next(arguements.argz, arguements.argz_len, prev)) {
+                printf(" %s", word);
+                prev = word;
+            }
+            printf("\n");
+            free(arguements.argz);
+        }
     }
 
     while(1) {
@@ -157,4 +155,36 @@ void dashboard(void)
                     break;
             }
         } while(1);
+}
+
+static int parse_opt(int key, char *arg, struct argp_state *state)
+{
+    (void)*arg;
+    (void)*state;
+    struct arguements *a = state->input;
+
+    switch(key) {
+        case 's':
+            choice = scientific;
+            break;
+        
+        case 'm':
+            choice = matrix;
+            break;
+
+        case 'c':
+            choice = complex;
+            break;
+        
+        case ARGP_KEY_ARG:
+            argz_add(&a->argz, &a->argz_len, arg);
+            break;
+        
+        case ARGP_KEY_INIT:
+            a->argz = 0;
+            a->argz_len = 0;
+            break;
+    }
+
+    return 0;
 }
