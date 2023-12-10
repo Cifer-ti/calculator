@@ -79,5 +79,13 @@ Supports basic oprations on complex numbers such as
 
 - Ensure that you have a C compiler installed on your system (e.g., GCC).
 
+## Compilation
+To compile this program, clone this repository on your local machine, navigate to the src directory, and run this command,
+depending on your system.
+
+### Linux
+"gcc calc.c complib/complib.c scilib/scilib.c matxlib/matxlib.c stack/stack.c -o calc -lm"
+for gcc compiler.
+
 ## Extra Information
-For extra informations on usage, check the main page.
+For extra informations on usage, check the main page, or run calc --help from your terminal.
