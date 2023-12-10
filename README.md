@@ -83,7 +83,7 @@ Supports basic oprations on complex numbers such as
 To compile this program, clone this repository on your local machine, navigate to the src directory, and run this command,
 depending on your system.
 
-### Linux
+* `Linux`
 "gcc calc.c complib/complib.c scilib/scilib.c matxlib/matxlib.c stack/stack.c -o calc -lm"
 for gcc compiler.
 
