@@ -1,0 +1,6 @@
+#ignore executalbes without .o extension
+matxlibt
+scilibt
+matxlib
+complib
+calc
