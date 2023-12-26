@@ -74,3 +74,8 @@ void pri(Stack s)
 {
     printf("%d\n", s->top);
 }
+
+void clearStack(Stack s)
+{
+		s->top = -1;
+}

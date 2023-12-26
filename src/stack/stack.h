@@ -63,6 +63,13 @@ bool isstackfull(Stack s);
 */
 bool isStackempty(Stack s);
 
-void pri(Stack s);
+/**
+ * clearStack: Clears the stack.
+ *
+ * s- The stack to be cleared.
+ */
+void clearStack(Stack s);
+
+/* void pri(Stack s); */
 
 #endif

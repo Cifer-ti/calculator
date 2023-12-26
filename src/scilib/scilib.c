@@ -59,7 +59,7 @@ struct buffer tokenbuffer[__MAX_TOKEN_LEN__];
 struct buffer postfixbuffer[__MAX_TOKEN_LEN__];
 Stack postfixStack;
 
-int postind = 0;
+int postind;
 
 /**
  * streinbuffer: Stores the different tokens into the 
@@ -371,7 +371,7 @@ void postfixConvert(void)
 }
 
 /**
- * evaluatefunctions: Evaluates a function and pushes the
+ * evaluatefunctions: Evaluates a mathematical function and pushes the
  *                    result back into the stack.
  * 
  * s- The structure containing function info.
@@ -563,6 +563,13 @@ double evaluate(void)
     
 }
 
+void reset(void)
+{
+	postind = 0;
+	clearStack(postfixStack);
+}
+
+
 
 int scimain(void)
 {   
@@ -584,7 +591,11 @@ int scimain(void)
         ans = evaluate();
 
         printf("Answer = %lf\n", ans);
+
+				reset();
     }
+		
+		free(postfixStack);
     
     return 0;
 }
