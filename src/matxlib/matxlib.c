@@ -446,10 +446,13 @@ operation checkoperation(char *in)
     }
     
     if(isalpha(*in)) {
-        while(*in != '(' && *in != '\n') {
+        while(*in != '(' && *in != '\0') {
             str[i++] = *in++;
         }
         str[i] = '\0';
+
+        if(*in != '(')
+            return ERR;
     }
     else
         return normal;
@@ -503,13 +506,24 @@ int matxmain(void)
 
     int i = 0, j = 0;
     int col, row, ind = 0;
-    int op;
+    int op = NOT_FOUND;
 
-    printf("Enter matrix expression: ");
-    fgets(input, sizeof(input), stdin);
+    while(1) {
+        printf("Enter matrix expression: ");
+        fgets(input, sizeof(input), stdin);
+        input[strlen(input) - 1] = '\0';
 
-    op = checkoperation(input);
+        op = checkoperation(input);
+        
+        if(op == NOT_FOUND)
+            printf("operation '%s' not recognised as valid operation.Try again\n\n", input); 
 
+        else if(op == ERR)
+            printf("Error: '(' not found at end of expresion\n\n");
+        
+        else
+            break;
+    }
 
     if(op == l_quit)
         return l_quit;
