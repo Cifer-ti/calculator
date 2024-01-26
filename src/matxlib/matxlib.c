@@ -428,7 +428,7 @@ char *parsematx(char* str, int col, int row, double matrix[row][col])
 */
 operation checkoperation(char *in)
 {
-    char str[5];
+    char str[__MAX_TOKEN_LEN__ / 4];
     int i = 0;
 
     if(*in == '|')     /* the functionality for putting |matxstr| is still to be implemented */
@@ -453,6 +453,11 @@ operation checkoperation(char *in)
 
         if(*in != '(')
             return ERR;
+        
+        if(strchr(in, ')') == NULL) {
+            printf("missen closing parenthesis\n\n");
+            return ERR;
+        }
     }
     else
         return normal;
@@ -519,7 +524,7 @@ int matxmain(void)
             printf("operation '%s' not recognised as valid operation.Try again\n\n", input); 
 
         else if(op == ERR)
-            printf("Error: '(' not found at end of expresion\n\n");
+            printf("Error: '(' or ')' not correctly embedded in expression or expression not recognised\n\n");
         
         else
             break;
