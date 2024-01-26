@@ -438,11 +438,11 @@ operation checkoperation(char *in)
         strncpy(str, in, 4);
         str[strlen(str)] = '\0';
 
-        if(strncmp(str, "q", 1) == 0)
-            return l_quit;
-
-        else if(strncmp(str, "q!", 2) == 0)
+        if(strncmp(str, "q!", 2) == 0)
             return immediatequit;
+
+        else if(strncmp(str, "q", 1) == 0)
+            return l_quit;
     }
     
     if(isalpha(*in)) {
