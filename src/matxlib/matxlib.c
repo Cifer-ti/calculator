@@ -428,7 +428,7 @@ char *parsematx(char* str, int col, int row, double matrix[row][col])
 */
 operation checkoperation(char *in)
 {
-    char str[5];
+    char str[__MAX_TOKEN_LEN__ / 4];
     int i = 0;
 
     if(*in == '|')     /* the functionality for putting |matxstr| is still to be implemented */
@@ -438,18 +438,26 @@ operation checkoperation(char *in)
         strncpy(str, in, 4);
         str[strlen(str)] = '\0';
 
-        if(strncmp(str, "q", 1) == 0)
-            return l_quit;
-
-        else if(strncmp(str, "q!", 2) == 0)
+        if(strncmp(str, "q!", 2) == 0)
             return immediatequit;
+
+        else if(strncmp(str, "q", 1) == 0)
+            return l_quit;
     }
     
     if(isalpha(*in)) {
-        while(*in != '(' && *in != '\n') {
+        while(*in != '(' && *in != '\0') {
             str[i++] = *in++;
         }
         str[i] = '\0';
+
+        if(*in != '(')
+            return ERR;
+        
+        if(strchr(in, ')') == NULL) {
+            printf("missen closing parenthesis\n\n");
+            return ERR;
+        }
     }
     else
         return normal;
@@ -503,13 +511,24 @@ int matxmain(void)
 
     int i = 0, j = 0;
     int col, row, ind = 0;
-    int op;
+    int op = NOT_FOUND;
 
-    printf("Enter matrix expression: ");
-    fgets(input, sizeof(input), stdin);
+    while(1) {
+        printf("Enter matrix expression: ");
+        fgets(input, sizeof(input), stdin);
+        input[strlen(input) - 1] = '\0';
 
-    op = checkoperation(input);
+        op = checkoperation(input);
+        
+        if(op == NOT_FOUND)
+            printf("operation '%s' not recognised as valid operation.Try again\n\n", input); 
 
+        else if(op == ERR)
+            printf("Error: '(' or ')' not correctly embedded in expression or expression not recognised\n\n");
+        
+        else
+            break;
+    }
 
     if(op == l_quit)
         return l_quit;
