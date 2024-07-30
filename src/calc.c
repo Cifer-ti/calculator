@@ -42,10 +42,7 @@ int main(int argc, char **argv)
     struct arguements arguements;
 
     /* determine if user is in interactive or commandline mode */
-    if(argc == 1)
-        choiceOfMode = interactive;
-    else
-        choiceOfMode = commandline;
+    choiceOfMode = argc == 1 ? interactive : commandline;
 
     if(choiceOfMode == interactive) {
         PrintMainBoard();
